@@ -14,6 +14,7 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
       :root {
         --font-display:
@@ -119,7 +120,6 @@
         }
       }
 
-      /* ---------- App shell ---------- */
       #app {
         display: flex;
         min-height: 100vh;
@@ -231,6 +231,20 @@
         margin-top: 9px;
         font-size: 11px;
         color: var(--text-faint);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .sync-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--text-faint);
+        flex-shrink: 0;
+      }
+      .sync-dot.on {
+        background: var(--green);
+        box-shadow: 0 0 0 3px var(--green-soft);
       }
 
       main.content {
@@ -321,8 +335,11 @@
         width: 15px;
         height: 15px;
       }
+      .btn[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+      }
 
-      /* ---------- cards / grid ---------- */
       .grid-stats {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -533,7 +550,6 @@
         font-weight: 400;
       }
 
-      /* ---------- tables ---------- */
       .table-card {
         background: var(--surface);
         backdrop-filter: var(--blur);
@@ -659,7 +675,6 @@
         height: 13px;
       }
 
-      /* mobile cards for tables */
       .mobile-cards {
         display: none;
       }
@@ -702,7 +717,6 @@
         margin-top: 12px;
       }
 
-      /* ---------- converter ---------- */
       .converter-card {
         background: var(--surface-solid);
         border: 1px solid var(--border);
@@ -796,7 +810,6 @@
         margin-top: 20px;
       }
 
-      /* ---------- forms / modal ---------- */
       .modal-overlay {
         position: fixed;
         inset: 0;
@@ -970,7 +983,6 @@
         color: var(--red);
       }
 
-      /* ---------- toast ---------- */
       #toast-wrap {
         position: fixed;
         bottom: 18px;
@@ -1027,7 +1039,6 @@
         background: var(--red);
       }
 
-      /* ---------- FAB + bottom nav (mobile) ---------- */
       .fab {
         position: fixed;
         right: 18px;
@@ -1243,7 +1254,6 @@
   </head>
   <body>
     <div id="app">
-      <!-- Sidebar (desktop) -->
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">OC</div>
@@ -1259,11 +1269,13 @@
               >-- --- ----</span
             >
           </div>
-          <div class="proj-pill" id="sb-project-sub">Santo Domingo, RD</div>
+          <div class="proj-pill">
+            <span class="sync-dot" id="sb-sync-dot"></span
+            ><span id="sb-project-sub">Solo este navegador</span>
+          </div>
         </div>
       </aside>
 
-      <!-- Topbar (mobile) -->
       <div class="topbar-mobile">
         <div style="display: flex; align-items: center; gap: 9px">
           <div
@@ -1282,7 +1294,6 @@
       </div>
 
       <main class="content">
-        <!-- ===================== DASHBOARD ===================== -->
         <section class="view" id="view-dashboard">
           <div class="page-header">
             <div>
@@ -1380,7 +1391,6 @@
           </div>
         </section>
 
-        <!-- ===================== CAMBIO DE DIVISAS ===================== -->
         <section class="view" id="view-cambio">
           <div class="page-header">
             <div>
@@ -1511,7 +1521,6 @@
           </div>
         </section>
 
-        <!-- ===================== MATERIALES / FERRETERÍA ===================== -->
         <section class="view" id="view-materiales">
           <div class="page-header">
             <div>
@@ -1575,7 +1584,6 @@
           </div>
         </section>
 
-        <!-- ===================== PAGOS ===================== -->
         <section class="view" id="view-pagos">
           <div class="page-header">
             <div>
@@ -1642,12 +1650,14 @@
           </div>
         </section>
 
-        <!-- ===================== CONFIGURACIÓN ===================== -->
         <section class="view" id="view-config">
           <div class="page-header">
             <div>
               <h1>Configuración</h1>
-              <p>Datos de la obra, presupuesto y respaldo de información</p>
+              <p>
+                Datos de la obra, presupuesto, sincronización y respaldo de
+                información
+              </p>
             </div>
           </div>
 
@@ -1710,7 +1720,7 @@
             <div class="card">
               <h3>Respaldo de datos</h3>
               <p class="card-sub">
-                Toda la información se guarda en este navegador. Exporta un
+                Este navegador siempre guarda una copia local. Exporta un
                 respaldo con frecuencia.
               </p>
               <div style="display: flex; flex-direction: column; gap: 10px">
@@ -1761,16 +1771,114 @@
                   color: var(--text-faint);
                 "
               >
-                Obra Control · datos privados de este navegador · sin servidor
-                externo
+                Obra Control · datos guardados en este navegador, con
+                sincronización opcional en la nube
               </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 14px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 10px;
+                flex-wrap: wrap;
+              "
+            >
+              <div>
+                <h3 style="margin-bottom: 2px">
+                  Sincronización entre dispositivos
+                </h3>
+                <p class="card-sub" style="margin: 0; max-width: 520px">
+                  Conecta una base de datos gratuita en Supabase para ver la
+                  misma información en el celular, la tablet y la computadora al
+                  mismo tiempo.
+                </p>
+              </div>
+              <span
+                class="tag"
+                id="sync-badge"
+                style="
+                  background: var(--surface-2);
+                  color: var(--text-dim);
+                  flex-shrink: 0;
+                "
+                >Solo este navegador</span
+              >
+            </div>
+
+            <div class="field-row" style="margin-top: 16px">
+              <div class="field">
+                <label>Supabase Project URL</label
+                ><input
+                  id="conn-url"
+                  placeholder="https://xxxxxxxx.supabase.co"
+                />
+              </div>
+              <div class="field">
+                <label>Supabase anon key</label
+                ><input id="conn-key" placeholder="sb_publishable_..." />
+              </div>
+            </div>
+            <div class="field" style="margin-top: 2px">
+              <label
+                >Código de proyecto (compártelo entre tus dispositivos)</label
+              >
+              <div style="display: flex; gap: 8px">
+                <input
+                  id="conn-project"
+                  placeholder="ej. obra-guillermo-2026"
+                  style="flex: 1"
+                />
+                <button
+                  class="btn btn-ghost btn-sm"
+                  id="conn-copy-btn"
+                  type="button"
+                >
+                  Copiar
+                </button>
+              </div>
+              <span class="hint"
+                >Usa exactamente el mismo código en todos los dispositivos que
+                deban compartir esta obra.</span
+              >
+            </div>
+            <div
+              style="
+                margin-top: 14px;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+              "
+            >
+              <button class="btn btn-gold" id="conn-save-btn">
+                Conectar y sincronizar
+              </button>
+              <button class="btn btn-ghost" id="conn-disconnect-btn">
+                Desconectar
+              </button>
+            </div>
+            <div
+              style="
+                margin-top: 14px;
+                padding-top: 14px;
+                border-top: 1px solid var(--border);
+                font-size: 11.5px;
+                color: var(--text-faint);
+              "
+            >
+              La primera vez que conectes, tus datos actuales de este navegador
+              se suben a la nube. Desde ahí, cualquier dispositivo con la misma
+              URL, key y código de proyecto verá y editará la misma información
+              en tiempo real.
             </div>
           </div>
         </section>
       </main>
     </div>
 
-    <!-- FAB (mobile) -->
     <button class="fab" id="fab-btn">
       <svg
         viewBox="0 0 24 24"
@@ -1836,12 +1944,8 @@
       </div>
     </div>
 
-    <!-- Bottom nav (mobile) -->
     <nav class="bottom-nav" id="bottom-nav"></nav>
 
-    <!-- ===================== MODALS ===================== -->
-
-    <!-- Material modal -->
     <div class="modal-overlay" id="modal-material">
       <div class="modal">
         <div class="modal-head">
@@ -1960,7 +2064,6 @@
       </div>
     </div>
 
-    <!-- Payment modal -->
     <div class="modal-overlay" id="modal-payment">
       <div class="modal">
         <div class="modal-head">
@@ -2064,7 +2167,6 @@
       </div>
     </div>
 
-    <!-- Exchange modal (quick register, mirrors converter) -->
     <div class="modal-overlay" id="modal-exchange">
       <div class="modal">
         <div class="modal-head">
@@ -2141,7 +2243,6 @@
       </div>
     </div>
 
-    <!-- Edit rate modal -->
     <div class="modal-overlay" id="modal-rate">
       <div class="modal">
         <div class="modal-head">
@@ -2180,7 +2281,6 @@
       </div>
     </div>
 
-    <!-- Confirm modal -->
     <div class="modal-overlay" id="modal-confirm">
       <div class="modal" style="max-width: 400px">
         <div class="modal-head">
@@ -2215,9 +2315,6 @@
       (function () {
         "use strict";
 
-        /* ============================================================
-   ICONS
-   ============================================================ */
         const ICONS = {
           dashboard:
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>',
@@ -2237,9 +2334,10 @@
         };
 
         /* ============================================================
-   STATE / STORAGE
-   ============================================================ */
+           STATE / STORAGE + SUPABASE SYNC LAYER
+           ============================================================ */
         const STORAGE_KEY = "obra_control_v1";
+        const CONN_KEY = "obra_control_conn";
 
         function defaultData() {
           return {
@@ -2259,9 +2357,28 @@
           };
         }
 
-        let DATA = loadData();
+        let DATA = defaultData();
+        let CONN = null;
+        let sbClient = null;
+        let rtChannel = null;
 
-        function loadData() {
+        function loadConn() {
+          try {
+            return JSON.parse(localStorage.getItem(CONN_KEY) || "null");
+          } catch (e) {
+            return null;
+          }
+        }
+        function saveConn(c) {
+          localStorage.setItem(CONN_KEY, JSON.stringify(c));
+          CONN = c;
+        }
+        function clearConn() {
+          localStorage.removeItem(CONN_KEY);
+          CONN = null;
+        }
+
+        function loadLocalData() {
           try {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return defaultData();
@@ -2277,24 +2394,223 @@
           }
         }
 
-        function saveData() {
+        function cacheLocally() {
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
           } catch (e) {
             console.error("Error guardando datos:", e);
             toast("No se pudo guardar en este dispositivo.", "err");
           }
-          renderAll();
         }
 
-        function nextId(type, yearOverride) {
-          const year = yearOverride || new Date().getFullYear();
-          const n = DATA.counters[type]++;
+        function nextId(type) {
+          const year = new Date().getFullYear();
           const prefix =
             type === "payment" ? "PAY"
             : type === "material" ? "BUY"
             : "EXC";
-          return prefix + "-" + year + "-" + String(n).padStart(4, "0");
+          const stamp = Date.now().toString(36).slice(-5).toUpperCase();
+          const rand = Math.random().toString(36).slice(2, 5).toUpperCase();
+          return prefix + "-" + year + "-" + stamp + rand;
+        }
+
+        function tableFor(kind) {
+          return (
+            kind === "materials" ? "oc_materials"
+            : kind === "payments" ? "oc_payments"
+            : "oc_exchanges"
+          );
+        }
+
+        async function refreshFromSupabase() {
+          const project = CONN.project;
+          const [cfgRes, matRes, payRes, exRes] = await Promise.all([
+            sbClient
+              .from("oc_config")
+              .select("data")
+              .eq("project_id", project)
+              .maybeSingle(),
+            sbClient
+              .from("oc_materials")
+              .select("id,data")
+              .eq("project_id", project)
+              .order("created_at", { ascending: false }),
+            sbClient
+              .from("oc_payments")
+              .select("id,data")
+              .eq("project_id", project)
+              .order("created_at", { ascending: false }),
+            sbClient
+              .from("oc_exchanges")
+              .select("id,data")
+              .eq("project_id", project)
+              .order("created_at", { ascending: false }),
+          ]);
+          [cfgRes, matRes, payRes, exRes].forEach((r) => {
+            if (r.error) throw r.error;
+          });
+
+          const d = defaultData();
+          DATA = Object.assign(d, {
+            config: Object.assign(
+              d.config,
+              (cfgRes.data && cfgRes.data.data) || {},
+            ),
+            materials: (matRes.data || []).map((r) => r.data),
+            payments: (payRes.data || []).map((r) => r.data),
+            exchanges: (exRes.data || []).map((r) => r.data),
+          });
+          cacheLocally();
+        }
+
+        function subscribeRealtime() {
+          if (!sbClient) return;
+          if (rtChannel) {
+            try {
+              sbClient.removeChannel(rtChannel);
+            } catch (e) {}
+            rtChannel = null;
+          }
+          rtChannel = sbClient.channel("oc-sync-" + CONN.project);
+          ["oc_materials", "oc_payments", "oc_exchanges", "oc_config"].forEach(
+            (table) => {
+              rtChannel.on(
+                "postgres_changes",
+                {
+                  event: "*",
+                  schema: "public",
+                  table,
+                  filter: "project_id=eq." + CONN.project,
+                },
+                () => {
+                  refreshFromSupabase()
+                    .then(renderAll)
+                    .catch((err) => console.error(err));
+                },
+              );
+            },
+          );
+          rtChannel.subscribe();
+        }
+
+        async function pushAllToSupabase() {
+          if (!sbClient) return;
+          const project = CONN.project;
+          const bulk = (list, table) =>
+            list.length ?
+              sbClient
+                .from(table)
+                .upsert(
+                  list.map((it) => ({
+                    id: it.id,
+                    project_id: project,
+                    data: it,
+                  })),
+                )
+            : Promise.resolve({ error: null });
+          const results = await Promise.all([
+            sbClient
+              .from("oc_config")
+              .upsert({ project_id: project, data: DATA.config }),
+            bulk(DATA.materials, "oc_materials"),
+            bulk(DATA.payments, "oc_payments"),
+            bulk(DATA.exchanges, "oc_exchanges"),
+          ]);
+          const failed = results.find((r) => r.error);
+          if (failed) throw failed.error;
+        }
+
+        async function clearAllRemote() {
+          if (!sbClient) return;
+          const project = CONN.project;
+          try {
+            await Promise.all([
+              sbClient.from("oc_materials").delete().eq("project_id", project),
+              sbClient.from("oc_payments").delete().eq("project_id", project),
+              sbClient.from("oc_exchanges").delete().eq("project_id", project),
+              sbClient.from("oc_config").delete().eq("project_id", project),
+            ]);
+          } catch (err) {
+            console.error(err);
+          }
+        }
+
+        async function syncUpsert(kind, item) {
+          cacheLocally();
+          renderAll();
+          if (!sbClient) return;
+          try {
+            const { error } = await sbClient
+              .from(tableFor(kind))
+              .upsert({ id: item.id, project_id: CONN.project, data: item });
+            if (error) throw error;
+          } catch (err) {
+            console.error(err);
+            toast(
+              "Se guardó en este dispositivo, pero falló la sincronización.",
+              "warn",
+            );
+          }
+        }
+
+        async function syncDelete(kind, id) {
+          cacheLocally();
+          renderAll();
+          if (!sbClient) return;
+          try {
+            const { error } = await sbClient
+              .from(tableFor(kind))
+              .delete()
+              .eq("id", id)
+              .eq("project_id", CONN.project);
+            if (error) throw error;
+          } catch (err) {
+            console.error(err);
+            toast("No se pudo eliminar en la nube.", "err");
+          }
+        }
+
+        async function syncConfig() {
+          cacheLocally();
+          renderAll();
+          if (!sbClient) return;
+          try {
+            const { error } = await sbClient
+              .from("oc_config")
+              .upsert({ project_id: CONN.project, data: DATA.config });
+            if (error) throw error;
+          } catch (err) {
+            console.error(err);
+            toast(
+              "Se guardó en este dispositivo, pero falló sincronizar la configuración.",
+              "warn",
+            );
+          }
+        }
+
+        function setSyncStatus(connected) {
+          const dot = document.getElementById("sb-sync-dot");
+          const label = document.getElementById("sb-project-sub");
+          const badge = document.getElementById("sync-badge");
+          if (connected) {
+            if (dot) dot.classList.add("on");
+            if (label)
+              label.textContent =
+                "Sincronizado · " + ((CONN && CONN.project) || "");
+            if (badge) {
+              badge.textContent = "Sincronizado";
+              badge.style.background = "var(--green-soft)";
+              badge.style.color = "var(--green)";
+            }
+          } else {
+            if (dot) dot.classList.remove("on");
+            if (label) label.textContent = "Solo este navegador";
+            if (badge) {
+              badge.textContent = "Solo este navegador";
+              badge.style.background = "var(--surface-2)";
+              badge.style.color = "var(--text-dim)";
+            }
+          }
         }
 
         /* ============================================================
@@ -2310,7 +2626,6 @@
           return (currency === "USD" ? "US$ " : "RD$ ") + formatted;
         }
         function fmtDateInput(val) {
-          // val = 'YYYY-MM-DD' -> DD/MM/YYYY
           if (!val) return "—";
           const parts = val.split("-");
           if (parts.length !== 3) return val;
@@ -2344,7 +2659,6 @@
    DERIVED / COMPUTED VALUES
    ============================================================ */
         function amountInDOP(item) {
-          // works for materials & payments (which store amount+currency, and rate if USD)
           if (item.currency === "USD") {
             const rate =
               Number(item.rate) || Number(DATA.config.manualRate) || 0;
@@ -2380,10 +2694,6 @@
           );
         }
 
-        // Each movement keeps its own currency (per point 57 of the spec: never merge
-        // currencies silently). DOP cash and USD cash are tracked as two separate,
-        // real pools of money — a USD purchase never touches the DOP balance and
-        // vice versa. Currency exchanges are the only bridge between the two.
         function gastadoEnDOP() {
           return (
             DATA.materials
@@ -2426,7 +2736,7 @@
         }
 
         /* ============================================================
-   ANIMATED NUMBERS (subtle count-up, like a premium configurator)
+   ANIMATED NUMBERS
    ============================================================ */
         const reduceMotion =
           window.matchMedia &&
@@ -2669,7 +2979,6 @@
             closeModals();
           });
 
-        /* segmented controls */
         function wireSeg(id) {
           const seg = document.getElementById(id);
           seg.querySelectorAll("button").forEach((b) =>
@@ -2814,7 +3123,7 @@
               0,
               "DOP",
             );
-            saveData();
+            syncUpsert("materials", item);
             closeModals();
             toast("Compra registrada correctamente.", "ok");
           });
@@ -2872,7 +3181,7 @@
               "pay-amount",
               "pay-notes",
             ].forEach((id) => (document.getElementById(id).value = ""));
-            saveData();
+            syncUpsert("payments", item);
             closeModals();
             toast("Pago " + item.id + " registrado.", "ok");
           });
@@ -2915,7 +3224,8 @@
             0,
             "DOP",
           );
-          saveData();
+          syncUpsert("exchanges", item);
+          syncConfig();
           closeModals();
           toast("Cambio " + item.id + " registrado.", "ok");
         });
@@ -2931,7 +3241,7 @@
             }
             DATA.config.manualRate = rate;
             DATA.config.rateUpdatedAt = Date.now();
-            saveData();
+            syncConfig();
             closeModals();
             toast("Tasa actualizada.", "ok");
           });
@@ -2940,7 +3250,6 @@
           .getElementById("edit-rate-btn")
           .addEventListener("click", () => openModal("rate"));
 
-        /* Converter (live, on the Cambio page) */
         const convUsd = document.getElementById("conv-usd");
         const convDop = document.getElementById("conv-dop");
         let convLast = "usd";
@@ -2961,9 +3270,6 @@
         document
           .getElementById("conv-swap-btn")
           .addEventListener("click", () => {
-            // Limpia ambos campos para empezar de nuevo desde el otro lado, en vez de
-            // reinterpretar el mismo número en la otra moneda (eso daba resultados
-            // incorrectos, ej. US$100 "invertido" no son RD$100).
             convUsd.value = "";
             convDop.value = "";
             (convLast === "usd" ? convDop : convUsd).focus();
@@ -2997,7 +3303,7 @@
             DATA.exchanges.unshift(item);
             convUsd.value = "";
             convDop.value = "";
-            saveData();
+            syncUpsert("exchanges", item);
             toast("Cambio " + item.id + " registrado en el historial.", "ok");
           });
 
@@ -3012,7 +3318,7 @@
               " se eliminará permanentemente.",
             () => {
               DATA[type] = DATA[type].filter((x) => x.id !== id);
-              saveData();
+              syncDelete(type, id);
               toast("Registro eliminado.", "ok");
             },
           );
@@ -3039,7 +3345,6 @@
               err,
             );
           }
-          // fallback for preview / environments without the capability
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
@@ -3062,7 +3367,6 @@
           const dark = [20, 20, 22];
           const gray = [130, 131, 136];
 
-          // Header
           doc.setFont("helvetica", "bold");
           doc.setFontSize(18);
           doc.setTextColor(...dark);
@@ -3263,7 +3567,6 @@
           else if (b > 0 && pct >= 80) budgetMsg += " · cerca del límite";
           document.getElementById("budget-caption").textContent = budgetMsg;
 
-          // movements
           const all = [
             ...DATA.materials.map((m) => ({
               type: "material",
@@ -3348,8 +3651,6 @@
               .join("");
           }
 
-          // breakdown (solo gastos reales — un cambio de divisa no es un gasto, es un
-          // movimiento entre tus propias cuentas, así que no entra aquí)
           const cats = [
             {
               label: "Materiales",
@@ -3654,7 +3955,6 @@
             .join("");
         }
 
-        /* delegated click handlers for dynamic rows */
         document.addEventListener("click", (e) => {
           const pdfP = e.target.closest("[data-pdf-payment]");
           if (pdfP) {
@@ -3707,6 +4007,11 @@
             DATA.config.capitalInicial || "";
           document.getElementById("cfg-capital-usd").value =
             DATA.config.capitalInicialUSD || "";
+          if (CONN) {
+            document.getElementById("conn-url").value = CONN.url || "";
+            document.getElementById("conn-key").value = CONN.key || "";
+            document.getElementById("conn-project").value = CONN.project || "";
+          }
         }
         document
           .getElementById("cfg-save-btn")
@@ -3729,7 +4034,7 @@
               0,
               Number(document.getElementById("cfg-capital-usd").value) || 0,
             );
-            saveData();
+            syncConfig();
             toast("Configuración guardada.", "ok");
           });
 
@@ -3756,8 +4061,22 @@
                   config: Object.assign(d.config, parsed.config || {}),
                   counters: Object.assign(d.counters, parsed.counters || {}),
                 });
-                saveData();
+                cacheLocally();
+                renderAll();
                 toast("Respaldo importado correctamente.", "ok");
+                if (sbClient) {
+                  pushAllToSupabase()
+                    .then(() =>
+                      toast("Respaldo sincronizado con la nube.", "ok"),
+                    )
+                    .catch((err) => {
+                      console.error(err);
+                      toast(
+                        "Se importó localmente, pero falló subirlo a la nube.",
+                        "warn",
+                      );
+                    });
+                }
               } catch (err) {
                 toast("El archivo no es un respaldo válido.", "err");
               }
@@ -3768,14 +4087,102 @@
         document.getElementById("reset-btn").addEventListener("click", () => {
           askConfirm(
             "¿Borrar todos los datos?",
-            "Se eliminarán todas las compras, pagos y cambios registrados en este navegador. Esta acción no se puede deshacer.",
+            "Se eliminarán todas las compras, pagos y cambios registrados" +
+              (sbClient ?
+                " (en este navegador y en la nube)"
+              : " en este navegador") +
+              ". Esta acción no se puede deshacer.",
             () => {
               DATA = defaultData();
-              saveData();
+              cacheLocally();
+              renderAll();
+              if (sbClient) clearAllRemote();
               toast("Todos los datos fueron eliminados.", "ok");
             },
           );
         });
+
+        function wireConnUI() {
+          document
+            .getElementById("conn-save-btn")
+            .addEventListener("click", async () => {
+              const url = document.getElementById("conn-url").value.trim();
+              const key = document.getElementById("conn-key").value.trim();
+              const project = document
+                .getElementById("conn-project")
+                .value.trim();
+              if (!url || !key || !project) {
+                toast(
+                  "Completa la URL, la key y el código de proyecto.",
+                  "warn",
+                );
+                return;
+              }
+              const btn = document.getElementById("conn-save-btn");
+              btn.disabled = true;
+              const oldTxt = btn.textContent;
+              btn.textContent = "Conectando…";
+              try {
+                const client = window.supabase.createClient(url, key);
+                const test = await client
+                  .from("oc_config")
+                  .select("project_id")
+                  .limit(1);
+                if (test.error) throw test.error;
+                sbClient = client;
+                saveConn({ url, key, project });
+                await pushAllToSupabase();
+                await refreshFromSupabase();
+                renderAll();
+                setSyncStatus(true);
+                subscribeRealtime();
+                toast(
+                  "Conectado. Tus datos ahora se sincronizan entre dispositivos.",
+                  "ok",
+                );
+              } catch (err) {
+                console.error(err);
+                sbClient = null;
+                toast(
+                  "No se pudo conectar. Revisa la URL, la key y que las tablas existan en Supabase.",
+                  "err",
+                );
+              } finally {
+                btn.disabled = false;
+                btn.textContent = oldTxt;
+              }
+            });
+
+          document
+            .getElementById("conn-disconnect-btn")
+            .addEventListener("click", () => {
+              if (rtChannel && sbClient) {
+                try {
+                  sbClient.removeChannel(rtChannel);
+                } catch (e) {}
+                rtChannel = null;
+              }
+              clearConn();
+              sbClient = null;
+              setSyncStatus(false);
+              toast(
+                "Desconectado. Ahora solo se guarda en este navegador.",
+                "ok",
+              );
+            });
+
+          document
+            .getElementById("conn-copy-btn")
+            .addEventListener("click", () => {
+              const val = document.getElementById("conn-project").value.trim();
+              if (!val) return;
+              if (navigator.clipboard) {
+                navigator.clipboard
+                  .writeText(val)
+                  .then(() => toast("Código copiado.", "ok"));
+              }
+            });
+        }
 
         /* ============================================================
    MAIN RENDER LOOP
@@ -3793,8 +4200,30 @@
         }
 
         /* ============================================================
-   INIT
+   BOOT / INIT
    ============================================================ */
+        async function boot() {
+          CONN = loadConn();
+          if (CONN && CONN.url && CONN.key && CONN.project) {
+            try {
+              sbClient = window.supabase.createClient(CONN.url, CONN.key);
+              await refreshFromSupabase();
+              setSyncStatus(true);
+              subscribeRealtime();
+              return;
+            } catch (err) {
+              console.error(err);
+              sbClient = null;
+              toast(
+                "No se pudo conectar con la nube. Mostrando datos guardados en este navegador.",
+                "warn",
+              );
+            }
+          }
+          DATA = loadLocalData();
+          setSyncStatus(false);
+        }
+
         function init() {
           buildNav();
           goToView("dashboard");
@@ -3808,7 +4237,8 @@
           document.getElementById("fab-menu").addEventListener("click", (e) => {
             if (e.target.id === "fab-menu") e.target.classList.remove("open");
           });
-          renderAll();
+          wireConnUI();
+          boot().then(renderAll);
         }
         init();
       })();
