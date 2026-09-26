@@ -1731,40 +1731,63 @@
                   step="0.01"
                 />
               </div>
-              <div class="field-row" style="margin-bottom: 12px">
-                <div class="field">
-                  <label
-                    >Capital inicial en RD$
-                    <span class="hint">(histórico)</span></label
-                  ><input
-                    type="number"
-                    id="cfg-capital"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    disabled
-                  />
+              <div
+                class="card"
+                style="
+                  margin-bottom: 12px;
+                  padding: 14px 16px;
+                  background: var(--surface-2);
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                  "
+                >
+                  <div>
+                    <h3 style="margin: 0 0 2px">Capital</h3>
+                    <p class="card-sub" style="margin: 0">
+                      Total de balance registrado hasta hoy
+                    </p>
+                  </div>
+                  <button
+                    class="btn btn-gold btn-sm"
+                    data-open-modal="balance"
+                    type="button"
+                  >
+                    + Agregar balance
+                  </button>
                 </div>
-                <div class="field">
-                  <label
-                    >Capital inicial en US$
-                    <span class="hint">(histórico)</span></label
-                  ><input
-                    type="number"
-                    id="cfg-capital-usd"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    disabled
-                  />
+                <div
+                  class="field-row"
+                  style="margin-top: 12px; margin-bottom: 0"
+                >
+                  <div class="field">
+                    <label>En RD$</label>
+                    <div
+                      class="value num"
+                      id="cfg-cap-dop"
+                      style="font-size: 18px"
+                    >
+                      RD$ 0.00
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>En US$</label>
+                    <div
+                      class="value num"
+                      id="cfg-cap-usd"
+                      style="font-size: 18px"
+                    >
+                      US$ 0.00
+                    </div>
+                  </div>
                 </div>
               </div>
-              <span class="hint"
-                >Este capital inicial ya fue migrado a tu historial de Balance.
-                Para registrar dinero nuevo (aportes, préstamos, etc.) usa
-                "Agregar Balance" desde el Dashboard — así queda un historial
-                completo y auditable.</span
-              >
               <div
                 class="field-row"
                 style="margin-top: 16px; margin-bottom: 12px"
@@ -1845,7 +1868,7 @@
             </div>
           </div>
 
-          <div class="card" style="margin-top: 14px">
+          <div class="card" style="margin-top: 14px; display: none">
             <div
               style="
                 display: flex;
@@ -2667,6 +2690,17 @@
           return created;
         }
 
+        function getLocalCachedBalances() {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            return parsed.balances || [];
+          } catch (e) {
+            return [];
+          }
+        }
+
         async function refreshFromSupabase() {
           const project = CONN.project;
           const [cfgRes, matRes, payRes, exRes] = await Promise.all([
@@ -2696,21 +2730,23 @@
           });
 
           // oc_balances es una tabla nueva: si el usuario aún no la creó en
-          // Supabase, no debe romper la sincronización del resto de datos.
-          let balRes = { data: [] };
+          // Supabase, no debe romper la sincronización ni borrar el balance
+          // que ya está guardado localmente en este navegador.
+          let balances;
           try {
-            balRes = await sbClient
+            const balRes = await sbClient
               .from("oc_balances")
               .select("id,data")
               .eq("project_id", project)
               .order("created_at", { ascending: false });
             if (balRes.error) throw balRes.error;
+            balances = (balRes.data || []).map((r) => r.data);
           } catch (err) {
             console.warn(
-              "No se pudo leer oc_balances (¿falta crear la tabla?):",
+              "No se pudo leer oc_balances (¿falta crear la tabla?). Se conserva el balance guardado localmente:",
               err,
             );
-            balRes = { data: [] };
+            balances = getLocalCachedBalances();
           }
 
           const d = defaultData();
@@ -2722,7 +2758,7 @@
             materials: (matRes.data || []).map((r) => r.data),
             payments: (payRes.data || []).map((r) => r.data),
             exchanges: (exRes.data || []).map((r) => r.data),
-            balances: (balRes.data || []).map((r) => r.data),
+            balances: balances,
           });
           cacheLocally();
         }
@@ -4683,10 +4719,14 @@
             DATA.config.ownerName || "";
           document.getElementById("cfg-budget").value =
             DATA.config.budgetTotal || "";
-          document.getElementById("cfg-capital").value =
-            DATA.config.capitalInicial || "";
-          document.getElementById("cfg-capital-usd").value =
-            DATA.config.capitalInicialUSD || "";
+          document.getElementById("cfg-cap-dop").textContent = money(
+            totalBalanceDOP(),
+            "DOP",
+          );
+          document.getElementById("cfg-cap-usd").textContent = money(
+            totalBalanceUSD(),
+            "USD",
+          );
           const apts = DATA.config.apartments || [
             "Apartamento 1",
             "Apartamento 2",
@@ -4711,14 +4751,6 @@
             DATA.config.budgetTotal = Math.max(
               0,
               Number(document.getElementById("cfg-budget").value) || 0,
-            );
-            DATA.config.capitalInicial = Math.max(
-              0,
-              Number(document.getElementById("cfg-capital").value) || 0,
-            );
-            DATA.config.capitalInicialUSD = Math.max(
-              0,
-              Number(document.getElementById("cfg-capital-usd").value) || 0,
             );
             DATA.config.apartments = [
               document.getElementById("cfg-apt-1").value.trim() ||
