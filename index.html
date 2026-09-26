@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
@@ -1375,6 +1375,18 @@
                 style="width: 0%"
               ></div>
             </div>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+                font-size: 12.5px;
+                color: var(--text-dim);
+              "
+            >
+              <span>Restante: <span class="num" id="budget-restante" style="color: var(--text)">RD$ 0.00</span></span>
+              <span>Gastos este mes: <span class="num" id="dash-gastos-periodo" style="color: var(--text)">RD$ 0.00</span></span>
+            </div>
           </div>
 
           <div class="grid-2">
@@ -1387,6 +1399,19 @@
               <h3>Desglose de gastos</h3>
               <p class="card-sub">Por tipo de movimiento</p>
               <div id="dash-breakdown"></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <h3>Principales materiales</h3>
+              <p class="card-sub">Mayor gasto acumulado por material</p>
+              <div id="dash-top-materials"></div>
+            </div>
+            <div class="card">
+              <h3>Por apartamento</h3>
+              <p class="card-sub">Materiales + pagos agrupados por unidad</p>
+              <div id="dash-by-apartment"></div>
             </div>
           </div>
         </section>
@@ -1710,6 +1735,16 @@
                 descuenta tu saldo en pesos, ni al revés. Los cambios de divisa
                 son el único puente entre ambos.</span
               >
+              <div class="field-row" style="margin-top: 16px; margin-bottom: 12px">
+                <div class="field">
+                  <label>Apartamento 1</label
+                  ><input id="cfg-apt-1" placeholder="Apartamento 1" />
+                </div>
+                <div class="field">
+                  <label>Apartamento 2</label
+                  ><input id="cfg-apt-2" placeholder="Apartamento 2" />
+                </div>
+              </div>
               <div style="margin-top: 16px">
                 <button class="btn btn-gold" id="cfg-save-btn">
                   Guardar cambios
@@ -2027,8 +2062,14 @@
           </div>
           <div class="field-row">
             <div class="field">
+              <label>Apartamento</label>
+              <select id="mat-apartment"></select>
+            </div>
+            <div class="field">
               <label>Fecha</label><input type="date" id="mat-date" />
             </div>
+          </div>
+          <div class="field-row">
             <div class="field">
               <label>Método de pago</label>
               <select id="mat-method">
@@ -2130,8 +2171,14 @@
           </div>
           <div class="field-row">
             <div class="field">
+              <label>Apartamento</label>
+              <select id="pay-apartment"></select>
+            </div>
+            <div class="field">
               <label>Fecha</label><input type="date" id="pay-date" />
             </div>
+          </div>
+          <div class="field-row">
             <div class="field">
               <label>Método de pago</label>
               <select id="pay-method">
@@ -2281,6 +2328,52 @@
       </div>
     </div>
 
+    <div class="modal-overlay" id="modal-budget">
+      <div class="modal">
+        <div class="modal-head">
+          <h3>Presupuesto</h3>
+          <button class="modal-close" data-close-modal>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label>Presupuesto total (RD$)</label
+            ><input type="number" id="bud-total" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Capital inicial en RD$</label
+              ><input type="number" id="bud-capital-dop" min="0" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="field">
+              <label>Capital inicial en US$</label
+              ><input type="number" id="bud-capital-usd" min="0" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+          <p style="font-size: 12px; color: var(--text-faint); margin: 0">
+            Esto actualiza el presupuesto y el capital inicial del proyecto activo. Tu historial de gastos no se borra.
+          </p>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-ghost" data-close-modal>Cancelar</button
+          ><button class="btn btn-gold" id="bud-save-btn">Guardar presupuesto</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-files">
+      <div class="modal" style="max-width: 480px">
+        <div class="modal-head">
+          <h3>Adjuntos de la factura</h3>
+          <button class="modal-close" data-close-modal>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+        </div>
+        <div class="modal-body" id="files-view-body" style="padding: 16px"></div>
+      </div>
+    </div>
+
     <div class="modal-overlay" id="modal-confirm">
       <div class="modal" style="max-width: 400px">
         <div class="modal-head">
@@ -2349,6 +2442,7 @@
               capitalInicialUSD: 0,
               manualRate: 0,
               rateUpdatedAt: null,
+              apartments: ["Apartamento 1", "Apartamento 2"],
             },
             materials: [],
             payments: [],
@@ -3107,6 +3201,7 @@
               currency,
               rate,
               provider: provider || "Sin especificar",
+              apartment: document.getElementById("mat-apartment").value || "General",
               method: document.getElementById("mat-method").value,
               notes: document.getElementById("mat-notes").value.trim(),
               createdAt: Date.now(),
@@ -3170,6 +3265,7 @@
               amount,
               currency,
               rate,
+              apartment: document.getElementById("pay-apartment").value || "General",
               method: document.getElementById("pay-method").value,
               notes: document.getElementById("pay-notes").value.trim(),
               createdAt: Date.now(),
@@ -3467,6 +3563,20 @@
             y += lines.length * 13 + 12;
           }
 
+          if (item.attachments && item.attachments.length) {
+            const img = item.attachments.find((f) => f.kind === "image");
+            if (img) {
+              try {
+                const boxW = 160;
+                const boxH = img.w && img.h ? (boxW * img.h) / img.w : 110;
+                doc.addImage(img.data, "JPEG", marginX, y, boxW, boxH);
+                y += boxH + 10;
+              } catch (e) {
+                console.warn("No se pudo incluir la imagen en el PDF:", e);
+              }
+            }
+          }
+
           y = Math.max(y, doc.internal.pageSize.getHeight() - 150);
           doc.setDrawColor(...gray);
           doc.setLineWidth(0.6);
@@ -3566,6 +3676,103 @@
           if (b > 0 && pct >= 100) budgetMsg += " · presupuesto excedido";
           else if (b > 0 && pct >= 80) budgetMsg += " · cerca del límite";
           document.getElementById("budget-caption").textContent = budgetMsg;
+          document.getElementById("budget-restante").textContent = money(
+            Math.max(0, b - totalGastadoDOP()),
+            "DOP",
+          );
+
+          const now = new Date();
+          const gastosPeriodo =
+            DATA.materials
+              .filter((m) => {
+                const d = new Date(m.date);
+                return (
+                  d.getFullYear() === now.getFullYear() &&
+                  d.getMonth() === now.getMonth()
+                );
+              })
+              .reduce((s, m) => s + amountInDOP(Object.assign({}, m, { amount: m.total })), 0) +
+            DATA.payments
+              .filter((p) => {
+                const d = new Date(p.date);
+                return (
+                  d.getFullYear() === now.getFullYear() &&
+                  d.getMonth() === now.getMonth()
+                );
+              })
+              .reduce((s, p) => s + amountInDOP(p), 0);
+          document.getElementById("dash-gastos-periodo").textContent = money(
+            gastosPeriodo,
+            "DOP",
+          );
+
+          const topMaterialsMap = {};
+          DATA.materials.forEach((m) => {
+            const key = m.name;
+            topMaterialsMap[key] =
+              (topMaterialsMap[key] || 0) +
+              amountInDOP(Object.assign({}, m, { amount: m.total }));
+          });
+          const topMaterials = Object.entries(topMaterialsMap)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+          const tm = document.getElementById("dash-top-materials");
+          tm.innerHTML =
+            topMaterials.length === 0 ?
+              '<div class="empty-state">' +
+              ICONS.empty +
+              "<p>Aún no hay materiales registrados.</p></div>"
+            : topMaterials
+                .map(
+                  ([name, val]) =>
+                    '<div class="bar-row"><span class="bar-label">' +
+                    escapeHtml(name) +
+                    '</span><div class="bar-track"><div class="bar-fill" style="width:' +
+                    (val / topMaterials[0][1]) * 100 +
+                    '%; background: var(--blue);"></div></div><span class="bar-val num">' +
+                    money(val, "DOP") +
+                    "</span></div>",
+                )
+                .join("");
+
+          const apts = DATA.config.apartments || ["Apartamento 1", "Apartamento 2"];
+          const aptTotals = {};
+          apts.concat(["General"]).forEach((a) => (aptTotals[a] = 0));
+          DATA.materials.forEach((m) => {
+            const a = m.apartment || "General";
+            aptTotals[a] =
+              (aptTotals[a] || 0) +
+              amountInDOP(Object.assign({}, m, { amount: m.total }));
+          });
+          DATA.payments.forEach((p) => {
+            const a = p.apartment || "General";
+            aptTotals[a] = (aptTotals[a] || 0) + amountInDOP(p);
+          });
+          const aptEntries = Object.entries(aptTotals).filter(([, v]) => v > 0);
+          const aptMax = Math.max(1, ...aptEntries.map(([, v]) => v));
+          const aptColors = { General: "var(--gold)" };
+          const palette = ["var(--blue)", "var(--green)", "var(--orange)"];
+          apts.forEach((a, i) => (aptColors[a] = palette[i % palette.length]));
+          const ba = document.getElementById("dash-by-apartment");
+          ba.innerHTML =
+            aptEntries.length === 0 ?
+              '<div class="empty-state">' +
+              ICONS.empty +
+              "<p>Aún no hay gastos asignados a un apartamento.</p></div>"
+            : aptEntries
+                .map(
+                  ([label, val]) =>
+                    '<div class="bar-row"><span class="bar-label">' +
+                    escapeHtml(label) +
+                    '</span><div class="bar-track"><div class="bar-fill" style="width:' +
+                    (val / aptMax) * 100 +
+                    "%; background:" +
+                    (aptColors[label] || "var(--text-dim)") +
+                    ';"></div></div><span class="bar-val num">' +
+                    money(val, "DOP") +
+                    "</span></div>",
+                )
+                .join("");
 
           const all = [
             ...DATA.materials.map((m) => ({
@@ -4007,6 +4214,9 @@
             DATA.config.capitalInicial || "";
           document.getElementById("cfg-capital-usd").value =
             DATA.config.capitalInicialUSD || "";
+          const apts = DATA.config.apartments || ["Apartamento 1", "Apartamento 2"];
+          document.getElementById("cfg-apt-1").value = apts[0] || "";
+          document.getElementById("cfg-apt-2").value = apts[1] || "";
           if (CONN) {
             document.getElementById("conn-url").value = CONN.url || "";
             document.getElementById("conn-key").value = CONN.key || "";
@@ -4034,6 +4244,11 @@
               0,
               Number(document.getElementById("cfg-capital-usd").value) || 0,
             );
+            DATA.config.apartments = [
+              document.getElementById("cfg-apt-1").value.trim() || "Apartamento 1",
+              document.getElementById("cfg-apt-2").value.trim() || "Apartamento 2",
+            ];
+            populateApartmentSelects();
             syncConfig();
             toast("Configuración guardada.", "ok");
           });
@@ -4187,11 +4402,25 @@
         /* ============================================================
    MAIN RENDER LOOP
    ============================================================ */
+        function populateApartmentSelects() {
+          const apts = DATA.config.apartments || ["Apartamento 1", "Apartamento 2"];
+          const opts =
+            '<option value="General">General / Ambos</option>' +
+            apts
+              .map((a) => '<option value="' + escapeHtml(a) + '">' + escapeHtml(a) + "</option>")
+              .join("");
+          ["mat-apartment", "pay-apartment"].forEach((id) => {
+            const sel = document.getElementById(id);
+            if (sel) sel.innerHTML = opts;
+          });
+        }
+
         function renderAll() {
           document.getElementById("sb-project-name").textContent =
             DATA.config.projectName || "Obra Control";
           document.getElementById("tb-project-name").textContent =
             DATA.config.projectName || "Obra Control";
+          populateApartmentSelects();
           renderDashboard();
           renderCambio();
           renderMateriales();
