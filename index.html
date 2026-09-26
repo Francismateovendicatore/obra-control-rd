@@ -2137,6 +2137,14 @@
               placeholder="Detalles adicionales…"
             ></textarea>
           </div>
+          <div class="field">
+            <label
+              >Foto del recibo/material
+              <span class="hint">(opcional, aparece en el PDF)</span></label
+            >
+            <input type="file" id="mat-photo" accept="image/*" />
+            <div id="mat-photo-preview" style="margin-top: 8px"></div>
+          </div>
         </div>
         <div class="modal-foot">
           <button class="btn btn-ghost" data-close-modal>Cancelar</button
@@ -2245,6 +2253,14 @@
               id="pay-notes"
               placeholder="Detalles adicionales…"
             ></textarea>
+          </div>
+          <div class="field">
+            <label
+              >Comprobante
+              <span class="hint">(opcional, aparece en el PDF)</span></label
+            >
+            <input type="file" id="pay-photo" accept="image/*" />
+            <div id="pay-photo-preview" style="margin-top: 8px"></div>
           </div>
         </div>
         <div class="modal-foot">
@@ -3174,6 +3190,9 @@
               0,
               "DOP",
             );
+            matPhotoData = null;
+            document.getElementById("mat-photo").value = "";
+            document.getElementById("mat-photo-preview").innerHTML = "";
           }
           if (name === "payment") {
             document.getElementById("pay-date").value = todayInputVal();
@@ -3188,6 +3207,9 @@
             resetSeg("pay-currency-seg", "DOP");
             resetSeg("pay-type-seg", "Ferretería");
             document.getElementById("pay-rate-field").style.display = "none";
+            payPhotoData = null;
+            document.getElementById("pay-photo").value = "";
+            document.getElementById("pay-photo-preview").innerHTML = "";
           }
           if (name === "exchange") {
             document.getElementById("ex-date").value = todayInputVal();
@@ -3254,6 +3276,66 @@
             confirmCallback = null;
             closeModals();
           });
+
+        let matPhotoData = null;
+        let payPhotoData = null;
+
+        function resizeImageFile(file, maxW) {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onerror = () => reject(reader.error);
+            reader.onload = () => {
+              const img = new Image();
+              img.onerror = () => reject(new Error("Imagen inválida"));
+              img.onload = () => {
+                const scale = Math.min(1, maxW / img.width);
+                const w = Math.round(img.width * scale);
+                const h = Math.round(img.height * scale);
+                const canvas = document.createElement("canvas");
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+                resolve({
+                  data: canvas.toDataURL("image/jpeg", 0.72),
+                  w,
+                  h,
+                });
+              };
+              img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        function wirePhotoInput(inputId, previewId, setPhoto) {
+          document
+            .getElementById(inputId)
+            .addEventListener("change", async (e) => {
+              const file = e.target.files && e.target.files[0];
+              if (!file) return;
+              try {
+                const photo = await resizeImageFile(file, 900);
+                setPhoto(photo);
+                document.getElementById(previewId).innerHTML =
+                  '<img src="' +
+                  photo.data +
+                  '" style="max-width:120px;max-height:90px;border-radius:8px;border:1px solid var(--border)" />';
+              } catch (err) {
+                console.error(err);
+                toast("No se pudo procesar la imagen.", "warn");
+              }
+            });
+        }
+        wirePhotoInput(
+          "mat-photo",
+          "mat-photo-preview",
+          (p) => (matPhotoData = p),
+        );
+        wirePhotoInput(
+          "pay-photo",
+          "pay-photo-preview",
+          (p) => (payPhotoData = p),
+        );
 
         function wireSeg(id) {
           const seg = document.getElementById(id);
@@ -3398,6 +3480,7 @@
                 document.getElementById("mat-apartment").value || "General",
               method: document.getElementById("mat-method").value,
               notes: document.getElementById("mat-notes").value.trim(),
+              photo: matPhotoData,
               createdAt: Date.now(),
             };
             DATA.materials.unshift(item);
@@ -3463,6 +3546,7 @@
                 document.getElementById("pay-apartment").value || "General",
               method: document.getElementById("pay-method").value,
               notes: document.getElementById("pay-notes").value.trim(),
+              photo: payPhotoData,
               createdAt: Date.now(),
             };
             DATA.payments.unshift(item);
@@ -3685,141 +3769,280 @@
           const { jsPDF } = window.jspdf;
           const doc = new jsPDF({ unit: "pt", format: "a4" });
           const pageW = doc.internal.pageSize.getWidth();
-          const marginX = 54;
-          let y = 64;
+          const pageH = doc.internal.pageSize.getHeight();
+          const marginX = 50;
+          let y = 58;
 
-          const gold = [180, 148, 98];
-          const dark = [20, 20, 22];
-          const gray = [130, 131, 136];
+          const ink = [24, 24, 27];
+          const sub = [122, 124, 132];
+          const faint = [190, 192, 198];
+          const gold = [178, 145, 90];
+          const line = [228, 229, 233];
 
+          // ---- Encabezado ----
+          doc.setFillColor(...ink);
+          doc.rect(marginX, y - 20, 3, 30, "F");
           doc.setFont("helvetica", "bold");
-          doc.setFontSize(18);
-          doc.setTextColor(...dark);
+          doc.setFontSize(15);
+          doc.setTextColor(...ink);
           doc.text(
             (DATA.config.projectName || "Mi Construcción").toUpperCase(),
-            marginX,
-            y,
+            marginX + 14,
+            y - 2,
           );
           doc.setFont("helvetica", "normal");
-          doc.setFontSize(9.5);
-          doc.setTextColor(...gray);
-          doc.text("Sistema de control de construcción", marginX, y + 14);
+          doc.setFontSize(8.5);
+          doc.setTextColor(...sub);
+          doc.text("Control financiero de construcción", marginX + 14, y + 11);
 
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(10);
-          doc.setTextColor(...gold);
-          const label =
+          const docLabel =
             kind === "payment" ?
-              "COMPROBANTE DE PAGO"
-            : "COMPROBANTE DE COMPRA";
-          doc.text(label, pageW - marginX, y - 4, { align: "right" });
-          doc.setFont("helvetica", "normal");
+              "Comprobante de pago"
+            : "Comprobante de compra";
+          doc.setFont("helvetica", "bold");
           doc.setFontSize(9);
-          doc.setTextColor(...gray);
-          doc.text("N.º " + item.id, pageW - marginX, y + 10, {
+          doc.setTextColor(...gold);
+          doc.text(docLabel.toUpperCase(), pageW - marginX, y - 8, {
+            align: "right",
+          });
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(8.5);
+          doc.setTextColor(...sub);
+          doc.text("N.º " + item.id, pageW - marginX, y + 5, {
+            align: "right",
+          });
+          doc.text(fmtDateInput(item.date), pageW - marginX, y + 16, {
             align: "right",
           });
 
           y += 34;
-          doc.setDrawColor(...gold);
-          doc.setLineWidth(1.1);
+          doc.setDrawColor(...line);
+          doc.setLineWidth(1);
           doc.line(marginX, y, pageW - marginX, y);
-          y += 30;
+          y += 28;
 
-          function row(labelTxt, valueTxt) {
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9.5);
-            doc.setTextColor(...gray);
-            doc.text(labelTxt, marginX, y);
+          // ---- Bloque de información (2 columnas) ----
+          const colW = (pageW - marginX * 2 - 24) / 2;
+          function miniLabel(txt, x, yy) {
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(11);
-            doc.setTextColor(...dark);
-            doc.text(String(valueTxt), marginX + 150, y);
-            y += 25;
+            doc.setFontSize(7.5);
+            doc.setTextColor(...faint);
+            doc.text(String(txt).toUpperCase(), x, yy);
+          }
+          function miniValue(txt, x, yy, size) {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(size || 11);
+            doc.setTextColor(...ink);
+            doc.text(String(txt || "—"), x, yy);
           }
 
-          row("Fecha", fmtDateInput(item.date));
+          const leftX = marginX;
+          const rightX = marginX + colW + 24;
+
           if (kind === "payment") {
-            row("Tipo", item.beneficiaryType);
-            row("Beneficiario", item.beneficiary);
-            row("Concepto", item.concept);
+            miniLabel("Beneficiario", leftX, y);
+            miniValue(item.beneficiary, leftX, y + 14);
+            miniLabel("Tipo", rightX, y);
+            miniValue(item.beneficiaryType, rightX, y + 14);
           } else {
-            row(
-              "Material",
-              item.name + " (" + item.quantity + " " + item.unit + ")",
-            );
-            row("Proveedor", item.provider);
-            row("Precio unitario", money(item.unitPrice, item.currency));
-          }
-          row("Método de pago", item.method || "—");
-          if (item.currency === "USD") {
-            row(
-              "Tasa utilizada",
-              "RD$ " + Number(item.rate || 0).toFixed(2) + " por US$",
+            miniLabel("Proveedor", leftX, y);
+            miniValue(item.provider, leftX, y + 14);
+            miniLabel("Categoría / Apartamento", rightX, y);
+            miniValue(
+              (item.category ? item.category + " · " : "") +
+                (item.apartment || "General"),
+              rightX,
+              y + 14,
+              10,
             );
           }
-          if (DATA.config.ownerName) {
-            row("Pagador", DATA.config.ownerName);
+          y += 34;
+          miniLabel("Método de pago", leftX, y);
+          miniValue(item.method || "—", leftX, y + 14, 10);
+          miniLabel("Moneda", rightX, y);
+          miniValue(item.currency, rightX, y + 14, 10);
+          y += 36;
+
+          // ---- Tabla de detalle ----
+          doc.setDrawColor(...line);
+          doc.setLineWidth(1);
+          doc.line(marginX, y, pageW - marginX, y);
+          y += 16;
+
+          const colDesc = marginX;
+          const colQty = pageW - marginX - 210;
+          const colPrice = pageW - marginX - 120;
+          const colTotal = pageW - marginX;
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(7.5);
+          doc.setTextColor(...faint);
+          doc.text("DESCRIPCIÓN", colDesc, y);
+          doc.text("CANT.", colQty, y, { align: "right" });
+          doc.text("PRECIO", colPrice, y, { align: "right" });
+          doc.text("TOTAL", colTotal, y, { align: "right" });
+          y += 10;
+          doc.setDrawColor(...line);
+          doc.line(marginX, y, pageW - marginX, y);
+          y += 20;
+
+          const desc = kind === "payment" ? item.concept : item.name;
+          const qtyTxt =
+            kind === "payment" ? "1" : item.quantity + " " + item.unit;
+          const unitPrice = kind === "payment" ? item.amount : item.unitPrice;
+          const total = kind === "payment" ? item.amount : item.total;
+
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(10.5);
+          doc.setTextColor(...ink);
+          const descLines = doc.splitTextToSize(
+            desc || "—",
+            colQty - colDesc - 20,
+          );
+          doc.text(descLines, colDesc, y);
+
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+          doc.setTextColor(...sub);
+          doc.text(qtyTxt, colQty, y, { align: "right" });
+          doc.text(money(unitPrice, item.currency), colPrice, y, {
+            align: "right",
+          });
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor(...ink);
+          doc.text(money(total, item.currency), colTotal, y, {
+            align: "right",
+          });
+
+          y += Math.max(descLines.length * 13, 13) + 14;
+          doc.setDrawColor(...line);
+          doc.line(marginX, y, pageW - marginX, y);
+          y += 26;
+
+          // ---- Totales (alineados a la derecha) ----
+          const totalsW = 230;
+          const totalsX = pageW - marginX - totalsW;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9.5);
+          doc.setTextColor(...sub);
+          doc.text("Subtotal", totalsX, y);
+          doc.setTextColor(...ink);
+          doc.text(money(total, item.currency), pageW - marginX, y, {
+            align: "right",
+          });
+          y += 18;
+
+          if (item.currency === "USD" && item.rate) {
+            doc.setTextColor(...sub);
+            doc.text("Tasa (RD$ por US$)", totalsX, y);
+            doc.setTextColor(...ink);
+            doc.text(Number(item.rate).toFixed(2), pageW - marginX, y, {
+              align: "right",
+            });
+            y += 18;
           }
 
           y += 6;
-          doc.setFillColor(...gold);
-          doc.setDrawColor(...gold);
-          doc.roundedRect(marginX, y, pageW - marginX * 2, 46, 8, 8, "F");
+          doc.setFillColor(...ink);
+          doc.roundedRect(totalsX, y, totalsW, 40, 7, 7, "F");
           doc.setFont("helvetica", "normal");
-          doc.setFontSize(9.5);
-          doc.setTextColor(40, 32, 12);
-          doc.text("MONTO TOTAL", marginX + 16, y + 18);
+          doc.setFontSize(8.5);
+          doc.setTextColor(230, 230, 232);
+          doc.text("TOTAL", totalsX + 14, y + 16);
           doc.setFont("helvetica", "bold");
-          doc.setFontSize(17);
-          const total = kind === "payment" ? item.amount : item.total;
-          doc.text(money(total, item.currency), pageW - marginX - 16, y + 30, {
-            align: "right",
-          });
-          y += 74;
+          doc.setFontSize(15);
+          doc.setTextColor(...gold);
+          doc.text(
+            money(total, item.currency),
+            totalsX + totalsW - 14,
+            y + 27,
+            { align: "right" },
+          );
+          if (item.currency === "USD" && item.rate) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8);
+            doc.setTextColor(200, 200, 204);
+            doc.text(
+              "≈ " + money(total * Number(item.rate), "DOP"),
+              totalsX + totalsW - 14,
+              y + 37,
+              { align: "right" },
+            );
+          }
+          y += 62;
 
+          // ---- Notas ----
           if (item.notes) {
             doc.setFont("helvetica", "bold");
-            doc.setFontSize(9.5);
-            doc.setTextColor(...gray);
+            doc.setFontSize(8);
+            doc.setTextColor(...faint);
             doc.text("NOTAS", marginX, y);
-            y += 14;
+            y += 13;
             doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor(...dark);
-            const lines = doc.splitTextToSize(item.notes, pageW - marginX * 2);
-            doc.text(lines, marginX, y);
-            y += lines.length * 13 + 12;
+            doc.setFontSize(9.5);
+            doc.setTextColor(...sub);
+            const noteLines = doc.splitTextToSize(
+              item.notes,
+              pageW - marginX * 2 - 150,
+            );
+            doc.text(noteLines, marginX, y);
           }
 
-          if (item.attachments && item.attachments.length) {
-            const img = item.attachments.find((f) => f.kind === "image");
-            if (img) {
-              try {
-                const boxW = 160;
-                const boxH = img.w && img.h ? (boxW * img.h) / img.w : 110;
-                doc.addImage(img.data, "JPEG", marginX, y, boxW, boxH);
-                y += boxH + 10;
-              } catch (e) {
-                console.warn("No se pudo incluir la imagen en el PDF:", e);
-              }
+          // ---- Foto adjunta (miniatura con marco) ----
+          if (item.photo && item.photo.data) {
+            try {
+              const boxW = 130;
+              const boxH =
+                item.photo.w && item.photo.h ?
+                  (boxW * item.photo.h) / item.photo.w
+                : 95;
+              const boxX = pageW - marginX - boxW;
+              const boxY = y - 8;
+              doc.setDrawColor(...line);
+              doc.setLineWidth(1);
+              doc.roundedRect(
+                boxX - 4,
+                boxY - 4,
+                boxW + 8,
+                boxH + 16,
+                6,
+                6,
+                "S",
+              );
+              doc.addImage(item.photo.data, "JPEG", boxX, boxY, boxW, boxH);
+              doc.setFont("helvetica", "normal");
+              doc.setFontSize(7);
+              doc.setTextColor(...faint);
+              doc.text(
+                "Comprobante adjunto",
+                boxX + boxW / 2,
+                boxY + boxH + 9,
+                { align: "center" },
+              );
+            } catch (e) {
+              console.warn("No se pudo incluir la imagen en el PDF:", e);
             }
           }
 
-          y = Math.max(y, doc.internal.pageSize.getHeight() - 150);
-          doc.setDrawColor(...gray);
+          // ---- Firmas ----
+          let sigY = Math.max(y + 40, pageH - 110);
+          doc.setDrawColor(...faint);
           doc.setLineWidth(0.6);
-          doc.line(marginX, y, marginX + 180, y);
-          doc.line(pageW - marginX - 180, y, pageW - marginX, y);
+          doc.line(marginX, sigY, marginX + 170, sigY);
+          doc.line(pageW - marginX - 170, sigY, pageW - marginX, sigY);
           doc.setFont("helvetica", "normal");
-          doc.setFontSize(9);
-          doc.setTextColor(...gray);
-          doc.text("Firma de quien paga", marginX, y + 14);
-          doc.text("Firma de quien recibe", pageW - marginX - 180, y + 14);
+          doc.setFontSize(8.5);
+          doc.setTextColor(...sub);
+          doc.text("Firma de quien paga", marginX, sigY + 13);
+          doc.text("Firma de quien recibe", pageW - marginX - 170, sigY + 13);
 
-          const footerY = doc.internal.pageSize.getHeight() - 40;
-          doc.setFontSize(8);
-          doc.setTextColor(...gray);
+          // ---- Pie de página ----
+          const footerY = pageH - 36;
+          doc.setDrawColor(...line);
+          doc.line(marginX, footerY - 14, pageW - marginX, footerY - 14);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.5);
+          doc.setTextColor(...faint);
           doc.text(
             "Generado por " +
               (DATA.config.projectName || "Obra Control") +
