@@ -1319,6 +1319,13 @@
               <div class="sub" id="st-disponible-usd-sub">
                 US$ 0.00 disponibles
               </div>
+              <button
+                class="btn btn-ghost btn-sm"
+                style="margin-top: 8px"
+                data-open-modal="balance"
+              >
+                + Agregar balance
+              </button>
             </div>
             <div class="card stat-card red">
               <div class="label">Gastado total</div>
@@ -1384,8 +1391,24 @@
                 color: var(--text-dim);
               "
             >
-              <span>Restante: <span class="num" id="budget-restante" style="color: var(--text)">RD$ 0.00</span></span>
-              <span>Gastos este mes: <span class="num" id="dash-gastos-periodo" style="color: var(--text)">RD$ 0.00</span></span>
+              <span
+                >Restante:
+                <span
+                  class="num"
+                  id="budget-restante"
+                  style="color: var(--text)"
+                  >RD$ 0.00</span
+                ></span
+              >
+              <span
+                >Gastos este mes:
+                <span
+                  class="num"
+                  id="dash-gastos-periodo"
+                  style="color: var(--text)"
+                  >RD$ 0.00</span
+                ></span
+              >
             </div>
           </div>
 
@@ -1710,32 +1733,42 @@
               </div>
               <div class="field-row" style="margin-bottom: 12px">
                 <div class="field">
-                  <label>Capital inicial en RD$</label
+                  <label
+                    >Capital inicial en RD$
+                    <span class="hint">(histórico)</span></label
                   ><input
                     type="number"
                     id="cfg-capital"
                     placeholder="0.00"
                     min="0"
                     step="0.01"
+                    disabled
                   />
                 </div>
                 <div class="field">
-                  <label>Capital inicial en US$</label
+                  <label
+                    >Capital inicial en US$
+                    <span class="hint">(histórico)</span></label
                   ><input
                     type="number"
                     id="cfg-capital-usd"
                     placeholder="0.00"
                     min="0"
                     step="0.01"
+                    disabled
                   />
                 </div>
               </div>
               <span class="hint"
-                >Cada moneda se calcula por separado: un gasto en dólares nunca
-                descuenta tu saldo en pesos, ni al revés. Los cambios de divisa
-                son el único puente entre ambos.</span
+                >Este capital inicial ya fue migrado a tu historial de Balance.
+                Para registrar dinero nuevo (aportes, préstamos, etc.) usa
+                "Agregar Balance" desde el Dashboard — así queda un historial
+                completo y auditable.</span
               >
-              <div class="field-row" style="margin-top: 16px; margin-bottom: 12px">
+              <div
+                class="field-row"
+                style="margin-top: 16px; margin-bottom: 12px"
+              >
                 <div class="field">
                   <label>Apartamento 1</label
                   ><input id="cfg-apt-1" placeholder="Apartamento 1" />
@@ -1975,6 +2008,22 @@
             </svg>
           </div>
           Cambio de divisas
+        </div>
+        <div class="fab-item" data-open-modal="balance">
+          <div
+            class="fi-ic"
+            style="background: var(--gold-soft); color: var(--gold)"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </div>
+          Agregar balance
         </div>
       </div>
     </div>
@@ -2328,36 +2377,70 @@
       </div>
     </div>
 
-    <div class="modal-overlay" id="modal-budget">
+    <div class="modal-overlay" id="modal-balance">
       <div class="modal">
         <div class="modal-head">
-          <h3>Presupuesto</h3>
+          <h3>Agregar Balance</h3>
           <button class="modal-close" data-close-modal>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
           </button>
         </div>
         <div class="modal-body">
-          <div class="field">
-            <label>Presupuesto total (RD$)</label
-            ><input type="number" id="bud-total" min="0" step="0.01" placeholder="0.00" />
-          </div>
           <div class="field-row">
             <div class="field">
-              <label>Capital inicial en RD$</label
-              ><input type="number" id="bud-capital-dop" min="0" step="0.01" placeholder="0.00" />
+              <label>Monto recibido</label
+              ><input
+                type="number"
+                id="bal-amount"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+              />
             </div>
             <div class="field">
-              <label>Capital inicial en US$</label
-              ><input type="number" id="bud-capital-usd" min="0" step="0.01" placeholder="0.00" />
+              <label>Moneda</label>
+              <div class="seg" id="bal-currency-seg">
+                <button type="button" data-val="DOP" class="active">DOP</button
+                ><button type="button" data-val="USD">USD</button>
+              </div>
             </div>
           </div>
-          <p style="font-size: 12px; color: var(--text-faint); margin: 0">
-            Esto actualiza el presupuesto y el capital inicial del proyecto activo. Tu historial de gastos no se borra.
-          </p>
+          <div class="field" id="bal-rate-field" style="display: none">
+            <label>Tasa utilizada (RD$ por US$)</label
+            ><input type="number" id="bal-rate" min="0" step="0.01" />
+          </div>
+          <div class="field">
+            <label>Origen</label>
+            <select id="bal-source">
+              <option>Aporte propio</option>
+              <option>Préstamo</option>
+              <option>Transferencia recibida</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fecha</label><input type="date" id="bal-date" />
+          </div>
+          <div class="field">
+            <label>Notas <span class="hint">(opcional)</span></label
+            ><textarea
+              id="bal-notes"
+              placeholder="Detalles adicionales…"
+            ></textarea>
+          </div>
         </div>
         <div class="modal-foot">
           <button class="btn btn-ghost" data-close-modal>Cancelar</button
-          ><button class="btn btn-gold" id="bud-save-btn">Guardar presupuesto</button>
+          ><button class="btn btn-gold" id="bal-save-btn">
+            Guardar balance
+          </button>
         </div>
       </div>
     </div>
@@ -2367,10 +2450,21 @@
         <div class="modal-head">
           <h3>Adjuntos de la factura</h3>
           <button class="modal-close" data-close-modal>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
           </button>
         </div>
-        <div class="modal-body" id="files-view-body" style="padding: 16px"></div>
+        <div
+          class="modal-body"
+          id="files-view-body"
+          style="padding: 16px"
+        ></div>
       </div>
     </div>
 
@@ -2443,11 +2537,13 @@
               manualRate: 0,
               rateUpdatedAt: null,
               apartments: ["Apartamento 1", "Apartamento 2"],
+              balancesMigrated: false,
             },
             materials: [],
             payments: [],
             exchanges: [],
-            counters: { payment: 1, material: 1, exchange: 1 },
+            balances: [],
+            counters: { payment: 1, material: 1, exchange: 1, balance: 1 },
           };
         }
 
@@ -2502,6 +2598,7 @@
           const prefix =
             type === "payment" ? "PAY"
             : type === "material" ? "BUY"
+            : type === "balance" ? "BAL"
             : "EXC";
           const stamp = Date.now().toString(36).slice(-5).toUpperCase();
           const rand = Math.random().toString(36).slice(2, 5).toUpperCase();
@@ -2512,8 +2609,46 @@
           return (
             kind === "materials" ? "oc_materials"
             : kind === "payments" ? "oc_payments"
+            : kind === "balances" ? "oc_balances"
             : "oc_exchanges"
           );
+        }
+
+        function migrateBalances() {
+          if (DATA.config.balancesMigrated) return [];
+          const created = [];
+          if (Number(DATA.config.capitalInicial) > 0) {
+            const item = {
+              id: nextId("balance"),
+              date: todayInputVal(),
+              amount: Number(DATA.config.capitalInicial),
+              currency: "DOP",
+              rate: null,
+              source: "Aporte propio",
+              notes:
+                "Capital inicial migrado automáticamente desde Configuración.",
+              createdAt: Date.now(),
+            };
+            DATA.balances.push(item);
+            created.push(item);
+          }
+          if (Number(DATA.config.capitalInicialUSD) > 0) {
+            const item = {
+              id: nextId("balance"),
+              date: todayInputVal(),
+              amount: Number(DATA.config.capitalInicialUSD),
+              currency: "USD",
+              rate: Number(DATA.config.manualRate) || null,
+              source: "Aporte propio",
+              notes:
+                "Capital inicial migrado automáticamente desde Configuración.",
+              createdAt: Date.now(),
+            };
+            DATA.balances.push(item);
+            created.push(item);
+          }
+          DATA.config.balancesMigrated = true;
+          return created;
         }
 
         async function refreshFromSupabase() {
@@ -2544,6 +2679,24 @@
             if (r.error) throw r.error;
           });
 
+          // oc_balances es una tabla nueva: si el usuario aún no la creó en
+          // Supabase, no debe romper la sincronización del resto de datos.
+          let balRes = { data: [] };
+          try {
+            balRes = await sbClient
+              .from("oc_balances")
+              .select("id,data")
+              .eq("project_id", project)
+              .order("created_at", { ascending: false });
+            if (balRes.error) throw balRes.error;
+          } catch (err) {
+            console.warn(
+              "No se pudo leer oc_balances (¿falta crear la tabla?):",
+              err,
+            );
+            balRes = { data: [] };
+          }
+
           const d = defaultData();
           DATA = Object.assign(d, {
             config: Object.assign(
@@ -2553,6 +2706,7 @@
             materials: (matRes.data || []).map((r) => r.data),
             payments: (payRes.data || []).map((r) => r.data),
             exchanges: (exRes.data || []).map((r) => r.data),
+            balances: (balRes.data || []).map((r) => r.data),
           });
           cacheLocally();
         }
@@ -2566,24 +2720,28 @@
             rtChannel = null;
           }
           rtChannel = sbClient.channel("oc-sync-" + CONN.project);
-          ["oc_materials", "oc_payments", "oc_exchanges", "oc_config"].forEach(
-            (table) => {
-              rtChannel.on(
-                "postgres_changes",
-                {
-                  event: "*",
-                  schema: "public",
-                  table,
-                  filter: "project_id=eq." + CONN.project,
-                },
-                () => {
-                  refreshFromSupabase()
-                    .then(renderAll)
-                    .catch((err) => console.error(err));
-                },
-              );
-            },
-          );
+          [
+            "oc_materials",
+            "oc_payments",
+            "oc_exchanges",
+            "oc_balances",
+            "oc_config",
+          ].forEach((table) => {
+            rtChannel.on(
+              "postgres_changes",
+              {
+                event: "*",
+                schema: "public",
+                table,
+                filter: "project_id=eq." + CONN.project,
+              },
+              () => {
+                refreshFromSupabase()
+                  .then(renderAll)
+                  .catch((err) => console.error(err));
+              },
+            );
+          });
           rtChannel.subscribe();
         }
 
@@ -2592,15 +2750,13 @@
           const project = CONN.project;
           const bulk = (list, table) =>
             list.length ?
-              sbClient
-                .from(table)
-                .upsert(
-                  list.map((it) => ({
-                    id: it.id,
-                    project_id: project,
-                    data: it,
-                  })),
-                )
+              sbClient.from(table).upsert(
+                list.map((it) => ({
+                  id: it.id,
+                  project_id: project,
+                  data: it,
+                })),
+              )
             : Promise.resolve({ error: null });
           const results = await Promise.all([
             sbClient
@@ -2612,6 +2768,19 @@
           ]);
           const failed = results.find((r) => r.error);
           if (failed) throw failed.error;
+
+          // oc_balances es una tabla nueva y opcional: si el usuario no la
+          // ha creado en Supabase todavía, no debe bloquear la sincronización
+          // del resto de los datos (que ya funcionaban antes de esta fase).
+          try {
+            const balRes = await bulk(DATA.balances, "oc_balances");
+            if (balRes.error) throw balRes.error;
+          } catch (err) {
+            console.warn(
+              "No se pudo sincronizar oc_balances (¿falta crear la tabla?):",
+              err,
+            );
+          }
         }
 
         async function clearAllRemote() {
@@ -2622,6 +2791,7 @@
               sbClient.from("oc_materials").delete().eq("project_id", project),
               sbClient.from("oc_payments").delete().eq("project_id", project),
               sbClient.from("oc_exchanges").delete().eq("project_id", project),
+              sbClient.from("oc_balances").delete().eq("project_id", project),
               sbClient.from("oc_config").delete().eq("project_id", project),
             ]);
           } catch (err) {
@@ -2808,19 +2978,22 @@
               .reduce((s, p) => s + Number(p.amount || 0), 0)
           );
         }
+        function totalBalanceDOP() {
+          return DATA.balances
+            .filter((b) => b.currency !== "USD")
+            .reduce((s, b) => s + Number(b.amount || 0), 0);
+        }
+        function totalBalanceUSD() {
+          return DATA.balances
+            .filter((b) => b.currency === "USD")
+            .reduce((s, b) => s + Number(b.amount || 0), 0);
+        }
+
         function cashDOP() {
-          return (
-            Number(DATA.config.capitalInicial || 0) +
-            totalExchangedToDOP() -
-            gastadoEnDOP()
-          );
+          return totalBalanceDOP() + totalExchangedToDOP() - gastadoEnDOP();
         }
         function cashUSD() {
-          return (
-            Number(DATA.config.capitalInicialUSD || 0) -
-            totalExchangedUSDGiven() -
-            gastadoEnUSD()
-          );
+          return totalBalanceUSD() - totalExchangedUSDGiven() - gastadoEnUSD();
         }
 
         function budgetPct() {
@@ -3032,6 +3205,15 @@
             document.getElementById("rate-input").value =
               DATA.config.manualRate || "";
           }
+          if (name === "balance") {
+            document.getElementById("bal-date").value = todayInputVal();
+            ["bal-amount", "bal-rate", "bal-notes"].forEach(
+              (id) => (document.getElementById(id).value = ""),
+            );
+            document.getElementById("bal-source").selectedIndex = 0;
+            resetSeg("bal-currency-seg", "DOP");
+            document.getElementById("bal-rate-field").style.display = "none";
+          }
           m.classList.add("open");
         }
         function closeModals() {
@@ -3095,6 +3277,17 @@
         wireSeg("mat-currency-seg");
         wireSeg("pay-currency-seg");
         wireSeg("pay-type-seg");
+        wireSeg("bal-currency-seg");
+
+        document
+          .getElementById("bal-currency-seg")
+          .addEventListener("segchange", (e) => {
+            document.getElementById("bal-rate-field").style.display =
+              e.detail === "USD" ? "flex" : "none";
+            if (e.detail === "USD")
+              document.getElementById("bal-rate").value =
+                DATA.config.manualRate || "";
+          });
 
         document
           .getElementById("mat-currency-seg")
@@ -3201,7 +3394,8 @@
               currency,
               rate,
               provider: provider || "Sin especificar",
-              apartment: document.getElementById("mat-apartment").value || "General",
+              apartment:
+                document.getElementById("mat-apartment").value || "General",
               method: document.getElementById("mat-method").value,
               notes: document.getElementById("mat-notes").value.trim(),
               createdAt: Date.now(),
@@ -3265,7 +3459,8 @@
               amount,
               currency,
               rate,
-              apartment: document.getElementById("pay-apartment").value || "General",
+              apartment:
+                document.getElementById("pay-apartment").value || "General",
               method: document.getElementById("pay-method").value,
               notes: document.getElementById("pay-notes").value.trim(),
               createdAt: Date.now(),
@@ -3280,6 +3475,40 @@
             syncUpsert("payments", item);
             closeModals();
             toast("Pago " + item.id + " registrado.", "ok");
+          });
+
+        document
+          .getElementById("bal-save-btn")
+          .addEventListener("click", () => {
+            const amount = Number(document.getElementById("bal-amount").value);
+            const date =
+              document.getElementById("bal-date").value || todayInputVal();
+            if (!amount || amount <= 0) {
+              markInvalid(document.getElementById("bal-amount"));
+              toast("El monto debe ser mayor a cero.", "warn");
+              return;
+            }
+            const currency = segValue("bal-currency-seg") || "DOP";
+            const rate =
+              currency === "USD" ?
+                Number(document.getElementById("bal-rate").value) ||
+                Number(DATA.config.manualRate) ||
+                0
+              : null;
+            const item = {
+              id: nextId("balance"),
+              date,
+              amount,
+              currency,
+              rate,
+              source: document.getElementById("bal-source").value,
+              notes: document.getElementById("bal-notes").value.trim(),
+              createdAt: Date.now(),
+            };
+            DATA.balances.unshift(item);
+            syncUpsert("balances", item);
+            closeModals();
+            toast("Balance agregado correctamente.", "ok");
           });
 
         document.getElementById("ex-save-btn").addEventListener("click", () => {
@@ -3691,7 +3920,11 @@
                   d.getMonth() === now.getMonth()
                 );
               })
-              .reduce((s, m) => s + amountInDOP(Object.assign({}, m, { amount: m.total })), 0) +
+              .reduce(
+                (s, m) =>
+                  s + amountInDOP(Object.assign({}, m, { amount: m.total })),
+                0,
+              ) +
             DATA.payments
               .filter((p) => {
                 const d = new Date(p.date);
@@ -3735,7 +3968,10 @@
                 )
                 .join("");
 
-          const apts = DATA.config.apartments || ["Apartamento 1", "Apartamento 2"];
+          const apts = DATA.config.apartments || [
+            "Apartamento 1",
+            "Apartamento 2",
+          ];
           const aptTotals = {};
           apts.concat(["General"]).forEach((a) => (aptTotals[a] = 0));
           DATA.materials.forEach((m) => {
@@ -3802,6 +4038,15 @@
               amount: e.dopReceived,
               currency: "DOP",
             })),
+            ...DATA.balances.map((b) => ({
+              type: "balance",
+              date: b.date,
+              ts: b.createdAt,
+              title: "Balance agregado",
+              sub: b.source || "Aporte",
+              amount: b.amount,
+              currency: b.currency,
+            })),
           ]
             .sort((a, b) => (b.ts || 0) - (a.ts || 0))
             .slice(0, 8);
@@ -3821,6 +4066,11 @@
               ic: ICONS.cambio,
               bg: "var(--gold-soft)",
               color: "var(--gold)",
+            },
+            balance: {
+              ic: ICONS.cambio,
+              bg: "var(--green-soft)",
+              color: "var(--green)",
             },
           };
           const mv = document.getElementById("dash-movements");
@@ -4214,7 +4464,10 @@
             DATA.config.capitalInicial || "";
           document.getElementById("cfg-capital-usd").value =
             DATA.config.capitalInicialUSD || "";
-          const apts = DATA.config.apartments || ["Apartamento 1", "Apartamento 2"];
+          const apts = DATA.config.apartments || [
+            "Apartamento 1",
+            "Apartamento 2",
+          ];
           document.getElementById("cfg-apt-1").value = apts[0] || "";
           document.getElementById("cfg-apt-2").value = apts[1] || "";
           if (CONN) {
@@ -4245,8 +4498,10 @@
               Number(document.getElementById("cfg-capital-usd").value) || 0,
             );
             DATA.config.apartments = [
-              document.getElementById("cfg-apt-1").value.trim() || "Apartamento 1",
-              document.getElementById("cfg-apt-2").value.trim() || "Apartamento 2",
+              document.getElementById("cfg-apt-1").value.trim() ||
+                "Apartamento 1",
+              document.getElementById("cfg-apt-2").value.trim() ||
+                "Apartamento 2",
             ];
             populateApartmentSelects();
             syncConfig();
@@ -4403,11 +4658,21 @@
    MAIN RENDER LOOP
    ============================================================ */
         function populateApartmentSelects() {
-          const apts = DATA.config.apartments || ["Apartamento 1", "Apartamento 2"];
+          const apts = DATA.config.apartments || [
+            "Apartamento 1",
+            "Apartamento 2",
+          ];
           const opts =
             '<option value="General">General / Ambos</option>' +
             apts
-              .map((a) => '<option value="' + escapeHtml(a) + '">' + escapeHtml(a) + "</option>")
+              .map(
+                (a) =>
+                  '<option value="' +
+                  escapeHtml(a) +
+                  '">' +
+                  escapeHtml(a) +
+                  "</option>",
+              )
               .join("");
           ["mat-apartment", "pay-apartment"].forEach((id) => {
             const sel = document.getElementById(id);
@@ -4437,6 +4702,12 @@
             try {
               sbClient = window.supabase.createClient(CONN.url, CONN.key);
               await refreshFromSupabase();
+              const migrated = migrateBalances();
+              if (migrated.length) {
+                cacheLocally();
+                syncConfig();
+                migrated.forEach((it) => syncUpsert("balances", it));
+              }
               setSyncStatus(true);
               subscribeRealtime();
               return;
@@ -4450,6 +4721,8 @@
             }
           }
           DATA = loadLocalData();
+          const migrated = migrateBalances();
+          if (migrated.length) cacheLocally();
           setSyncStatus(false);
         }
 
