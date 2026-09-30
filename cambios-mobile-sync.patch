@@ -1,0 +1,59 @@
+--- restored_original.html	2026-09-30 19:24:57.760611721 +0000
++++ index.html	2026-09-30 19:24:35.296070299 +0000
+@@ -1288,8 +1288,17 @@
+             Obra Control
+           </div>
+         </div>
+-        <div class="clock" style="text-align: right">
+-          <strong id="clock-time-m">--:--</strong>
++        <div style="text-align: right">
++          <div class="clock">
++            <strong id="clock-time-m">--:--</strong>
++          </div>
++          <div
++            class="proj-pill"
++            style="margin-top: 3px; justify-content: flex-end"
++          >
++            <span id="sb-project-sub-m">Solo este navegador</span
++            ><span class="sync-dot" id="sb-sync-dot-m"></span>
++          </div>
+         </div>
+       </div>
+ 
+@@ -2906,13 +2915,17 @@
+ 
+         function setSyncStatus(connected) {
+           const dot = document.getElementById("sb-sync-dot");
++          const dotM = document.getElementById("sb-sync-dot-m");
+           const label = document.getElementById("sb-project-sub");
++          const labelM = document.getElementById("sb-project-sub-m");
+           const badge = document.getElementById("sync-badge");
+           if (connected) {
+             if (dot) dot.classList.add("on");
++            if (dotM) dotM.classList.add("on");
+             if (label)
+               label.textContent =
+                 "Sincronizado · " + ((CONN && CONN.project) || "");
++            if (labelM) labelM.textContent = "Sincronizado";
+             if (badge) {
+               badge.textContent = "Sincronizado";
+               badge.style.background = "var(--green-soft)";
+@@ -2920,7 +2933,9 @@
+             }
+           } else {
+             if (dot) dot.classList.remove("on");
++            if (dotM) dotM.classList.remove("on");
+             if (label) label.textContent = "Solo este navegador";
++            if (labelM) labelM.textContent = "Solo este navegador";
+             if (badge) {
+               badge.textContent = "Solo este navegador";
+               badge.style.background = "var(--surface-2)";
+@@ -4913,6 +4928,8 @@
+    MAIN RENDER LOOP
+    ============================================================ */
+         function populateApartmentSelects() {
++          const anyModalOpen = document.querySelector(".modal-overlay.open");
++          if (anyModalOpen) return;
+           const apts = DATA.config.apartments || [
+             "Apartamento 1",
+             "Apartamento 2",
