@@ -1707,6 +1707,86 @@
           </div>
         </section>
 
+        <section class="view" id="view-balance">
+          <div class="page-header">
+            <div>
+              <h1>Balance</h1>
+              <p>
+                Todo el dinero que has metido a la obra: aportes, préstamos y
+                transferencias recibidas
+              </p>
+            </div>
+            <button class="btn btn-gold" data-open-modal="balance">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 5v14M5 12h14" /></svg
+              >Agregar balance
+            </button>
+          </div>
+
+          <div class="grid-stats" style="grid-template-columns: 1fr 1fr">
+            <div class="card stat-card gold">
+              <div class="label">Total metido en RD$</div>
+              <div class="value num" id="bal-total-dop">RD$ 0.00</div>
+              <div class="sub" id="bal-count-dop-sub">0 registros</div>
+            </div>
+            <div class="card stat-card blue">
+              <div class="label">Total metido en US$</div>
+              <div class="value num" id="bal-total-usd">US$ 0.00</div>
+              <div class="sub" id="bal-count-usd-sub">0 registros</div>
+            </div>
+          </div>
+
+          <div style="height: 14px"></div>
+
+          <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" /></svg
+                ><input
+                  id="search-balances"
+                  placeholder="Buscar origen o notas…"
+                />
+              </div>
+              <div
+                class="num"
+                style="font-size: 12.5px; color: var(--text-dim)"
+              >
+                Restante disponible:
+                <strong id="balance-restante" style="color: var(--text)"
+                  >RD$ 0.00</strong
+                >
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Origen</th>
+                    <th>Notas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-balances"></tbody>
+              </table>
+            </div>
+            <div class="mobile-cards" id="cards-balances"></div>
+          </div>
+        </section>
+
         <section class="view" id="view-config">
           <div class="page-header">
             <div>
@@ -2566,6 +2646,8 @@
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
           empty:
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 7l3-4h12l3 4"/></svg>',
+          balance:
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1 3 2.2c0 2.8-6 1.4-6 4.2 0 1.3 1.3 2.3 3 2.3s3-1 3-2.3"/></svg>',
         };
 
         /* ============================================================
@@ -3124,6 +3206,7 @@
           { id: "cambio", label: "Cambio de Moneda", icon: ICONS.cambio },
           { id: "materiales", label: "Materiales", icon: ICONS.materiales },
           { id: "pagos", label: "Pagos", icon: ICONS.pagos },
+          { id: "balance", label: "Balance", icon: ICONS.balance },
           { id: "config", label: "Configuración", icon: ICONS.config },
         ];
         let currentView = "dashboard";
@@ -4686,6 +4769,109 @@
             .join("");
         }
 
+        /* ============================================================
+   RENDER: BALANCE
+   ============================================================ */
+        const balanceSourceColor = {
+          "Aporte propio": "gold",
+          Préstamo: "orange",
+          "Transferencia recibida": "blue",
+          Otro: "green",
+        };
+
+        function renderBalances() {
+          const search = (
+            document.getElementById("search-balances").value || ""
+          ).toLowerCase();
+          const list = DATA.balances.filter(
+            (b) =>
+              (b.source || "").toLowerCase().includes(search) ||
+              (b.notes || "").toLowerCase().includes(search),
+          );
+
+          document.getElementById("bal-total-dop").textContent = money(
+            totalBalanceDOP(),
+            "DOP",
+          );
+          document.getElementById("bal-total-usd").textContent = money(
+            totalBalanceUSD(),
+            "USD",
+          );
+          const countDop = DATA.balances.filter(
+            (b) => b.currency !== "USD",
+          ).length;
+          const countUsd = DATA.balances.filter(
+            (b) => b.currency === "USD",
+          ).length;
+          document.getElementById("bal-count-dop-sub").textContent =
+            countDop + " registro" + (countDop === 1 ? "" : "s");
+          document.getElementById("bal-count-usd-sub").textContent =
+            countUsd + " registro" + (countUsd === 1 ? "" : "s");
+          document.getElementById("balance-restante").textContent = money(
+            cashDOP(),
+            "DOP",
+          );
+
+          const tbody = document.getElementById("tbl-balances");
+          const cards = document.getElementById("cards-balances");
+          if (list.length === 0) {
+            tbody.innerHTML =
+              '<tr><td colspan="5"><div class="empty-state">' +
+              ICONS.empty +
+              '<p>Todavía no has agregado ningún balance.</p><button class="btn btn-gold btn-sm" data-open-modal="balance">Agregar el primero</button></div></td></tr>';
+            cards.innerHTML =
+              '<div class="empty-state">' +
+              ICONS.empty +
+              '<p>Todavía no has agregado ningún balance.</p><button class="btn btn-gold btn-sm" data-open-modal="balance">Agregar el primero</button></div>';
+            return;
+          }
+          tbody.innerHTML = list
+            .map(
+              (b) =>
+                "<tr>" +
+                "<td>" +
+                fmtDateInput(b.date) +
+                "</td>" +
+                '<td class="num">' +
+                money(b.amount, b.currency) +
+                "</td>" +
+                '<td><span class="tag ' +
+                (balanceSourceColor[b.source] || "gold") +
+                '">' +
+                escapeHtml(b.source || "Otro") +
+                "</span></td>" +
+                "<td>" +
+                escapeHtml(b.notes || "—") +
+                "</td>" +
+                '<td><div class="row-actions"><button class="icon-btn" title="Eliminar" data-del-balance="' +
+                b.id +
+                '">' +
+                ICONS.trash +
+                "</button></div></td>" +
+                "</tr>",
+            )
+            .join("");
+          cards.innerHTML = list
+            .map(
+              (b) =>
+                '<div class="mrow"><div class="mrow-top"><div><div class="mrow-title">' +
+                money(b.amount, b.currency) +
+                '</div><div class="mrow-sub">' +
+                fmtDateInput(b.date) +
+                (b.notes ? " · " + escapeHtml(b.notes) : "") +
+                "</div></div></div>" +
+                '<div class="mrow-meta"><span class="tag ' +
+                (balanceSourceColor[b.source] || "gold") +
+                '">' +
+                escapeHtml(b.source || "Otro") +
+                "</span></div>" +
+                '<div class="mrow-actions"><button class="btn btn-danger btn-sm" style="flex:1;" data-del-balance="' +
+                b.id +
+                '">Eliminar</button></div></div>',
+            )
+            .join("");
+        }
+
         document.addEventListener("click", (e) => {
           const pdfP = e.target.closest("[data-pdf-payment]");
           if (pdfP) {
@@ -4712,6 +4898,11 @@
             deleteRecord("exchanges", delE.dataset.delExchange);
             return;
           }
+          const delB = e.target.closest("[data-del-balance]");
+          if (delB) {
+            deleteRecord("balances", delB.dataset.delBalance);
+            return;
+          }
         });
 
         document
@@ -4723,6 +4914,9 @@
         document
           .getElementById("search-payments")
           .addEventListener("input", renderPagos);
+        document
+          .getElementById("search-balances")
+          .addEventListener("input", renderBalances);
 
         /* ============================================================
    RENDER: CONFIG
@@ -4962,6 +5156,7 @@
           renderCambio();
           renderMateriales();
           renderPagos();
+          renderBalances();
           renderConfig();
         }
 
