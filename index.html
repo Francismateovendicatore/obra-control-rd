@@ -41357,7 +41357,7 @@ Resources:`;
             </div>
           </div>
 
-          <div class="card" style="margin-top: 14px; display: none">
+          <div class="card" style="margin-top: 14px">
             <div
               style="
                 display: flex;
@@ -41435,6 +41435,9 @@ Resources:`;
             >
               <button class="btn btn-gold" id="conn-save-btn">
                 Conectar y sincronizar
+              </button>
+              <button class="btn btn-ghost" id="conn-link-btn" type="button">
+                Copiar enlace para el teléfono
               </button>
               <button class="btn btn-ghost" id="conn-disconnect-btn">
                 Desconectar
@@ -44582,7 +44585,12 @@ Resources:`;
                 if (test.error) throw test.error;
                 sbClient = client;
                 saveConn({ url, key, project });
-                await pushAllToSupabase();
+                const hasLocal =
+                  DATA.materials.length ||
+                  DATA.payments.length ||
+                  DATA.exchanges.length ||
+                  DATA.balances.length;
+                if (hasLocal) await pushAllToSupabase();
                 await refreshFromSupabase();
                 renderAll();
                 setSyncStatus(true);
@@ -44620,6 +44628,30 @@ Resources:`;
                 "Desconectado. Ahora solo se guarda en este navegador.",
                 "ok",
               );
+            });
+
+          document
+            .getElementById("conn-link-btn")
+            .addEventListener("click", () => {
+              if (!CONN) {
+                toast("Primero conecta la nube en este dispositivo.", "warn");
+                return;
+              }
+              const code = btoa(
+                unescape(encodeURIComponent(JSON.stringify(CONN))),
+              );
+              const link =
+                location.origin + location.pathname + "#conn=" + code;
+              const done = () =>
+                toast(
+                  "Enlace copiado. Envíatelo y ábrelo en el teléfono. No lo compartas con nadie.",
+                  "ok",
+                );
+              if (navigator.clipboard) {
+                navigator.clipboard
+                  .writeText(link)
+                  .then(done, () => window.prompt("Copia este enlace:", link));
+              } else window.prompt("Copia este enlace:", link);
             });
 
           document
@@ -44769,6 +44801,24 @@ Resources:`;
             /^https?:/.test(location.protocol)
           ) {
             navigator.serviceWorker.register("sw.js").catch(() => {});
+          }
+          try {
+            if (location.hash.indexOf("#conn=") === 0) {
+              const c = JSON.parse(
+                decodeURIComponent(escape(atob(location.hash.slice(6)))),
+              );
+              if (c && c.url && c.key && c.project) {
+                saveConn({ url: c.url, key: c.key, project: c.project });
+                toast("Conectado a la nube. Cargando tus datos…", "ok");
+              }
+              history.replaceState(
+                null,
+                "",
+                location.pathname + location.search,
+              );
+            }
+          } catch (e) {
+            console.error(e);
           }
           boot().then(renderAll);
         }
