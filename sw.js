@@ -1,5 +1,5 @@
 /* Obra Control - funciona sin internet */
-const CACHE = "obra-control-v2";
+const CACHE = "obra-control-v3";
 const ASSETS = [
   "./",
   "./index.html",

@@ -2084,7 +2084,73 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       .pend-row .pr-amt { text-align: right; font-size: 13.5px; font-weight: 600; }
       .pend-row .tag { margin-top: 4px; }
       .field .hint-line { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+
+      /* ===== Fase 2: pestañas, papelera, personas ===== */
+      .viewtabs { display: flex; margin-bottom: 18px; width: 100%; max-width: 420px; }
+      .viewtabs button { flex: 1; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+      .viewtabs .nav-badge { margin: 0; }
+      .toast .undo-btn { margin-left: 12px; background: transparent; border: 1px solid var(--border-strong); color: var(--text); border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+      .backup-banner { display: none; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; margin-bottom: 16px; border-radius: 16px; background: var(--orange-soft); color: var(--orange); font-size: 13px; }
+      .backup-banner.show { display: flex; }
+      .backup-banner span { flex: 1; min-width: 200px; }
+      .person-card { cursor: pointer; }
+      .list-line { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+      .list-line:last-child { border-bottom: 0; }
+      .list-line small { display: block; color: var(--text-dim); font-size: 11.5px; margin-top: 2px; }
+      .mini-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .warn-text { color: var(--red, #ff6b6b); font-size: 12px; margin-top: 6px; }
+
+      #toast-wrap .toast { pointer-events: auto; }
+
+      /* ===== Gráficas del Dashboard ===== */
+      .chart-card { overflow: hidden; }
+      .chart-cap { font-size: 12.5px; color: var(--text-dim); min-height: 18px; margin-top: 8px; }
+      .chart-cap b { color: var(--text); font-weight: 600; }
+      .chart-svg { width: 100%; height: auto; display: block; overflow: visible; }
+      .chart-svg .ax { fill: var(--text-dim); font-size: 9.5px; font-family: inherit; }
+      .chart-svg .gl { stroke: var(--border); stroke-width: 1; }
+      .chart-svg .bar { transform-box: fill-box; transform-origin: bottom; animation: growY 0.75s var(--ease) both; animation-delay: calc(var(--i) * 70ms); cursor: pointer; transition: opacity 0.2s; }
+      .chart-svg .bar:hover { opacity: 0.8; }
+      .chart-svg .line-path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: drawLine 1.1s var(--ease) 0.15s forwards; }
+      .chart-svg .area-path { animation: fadeIn 0.9s ease 0.4s both; }
+      @keyframes growY { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+      @keyframes drawLine { to { stroke-dashoffset: 0; } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .chart-svg .bar, .chart-svg .line-path, .chart-svg .area-path { animation: none; stroke-dashoffset: 0; } }
+      .legend-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px; }
+      .legend-row i { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+      .legend-row .lg-name { flex: 1; }
+      .legend-row .lg-pct { color: var(--text-dim); font-size: 12px; width: 40px; text-align: right; }
+      .donut-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; justify-content: center; }
+      .donut-wrap svg { width: 150px; height: 150px; flex-shrink: 0; }
+      .donut-wrap .legend { flex: 1; min-width: 160px; }
+      .apt-row { margin-bottom: 14px; }
+      .apt-row:last-child { margin-bottom: 0; }
+      .apt-top { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; gap: 8px; }
+      .apt-track { height: 9px; border-radius: 6px; background: var(--surface-2); overflow: hidden; }
+      .apt-fill { height: 100%; border-radius: 6px; transform-origin: left; animation: growX 0.9s var(--ease) both; }
+      @keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+      .apt-sub { font-size: 11.5px; color: var(--text-dim); margin-top: 5px; }
+
+      /* ===== Candado PIN ===== */
+      #lock-screen { display: none; position: fixed; inset: 0; z-index: 9999; background: radial-gradient(120% 90% at 50% 0%, #14161d 0%, #05060a 70%); align-items: center; justify-content: center; padding: env(safe-area-inset-top, 0px) 20px env(safe-area-inset-bottom, 0px); }
+      html.locked #lock-screen { display: flex; }
+      html.locked body > *:not(#lock-screen):not(script) { visibility: hidden !important; }
+      .lock-box { width: 100%; max-width: 320px; text-align: center; }
+      .lock-title { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 20px; }
+      .lock-dots { display: flex; gap: 16px; justify-content: center; margin-bottom: 10px; }
+      .lock-dots i { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--border-strong); transition: background 0.15s, transform 0.15s; }
+      .lock-dots i.on { background: var(--text); border-color: var(--text); transform: scale(1.1); }
+      .lock-dots.shake { animation: lockShake 0.4s; }
+      @keyframes lockShake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+      .lock-msg { min-height: 20px; font-size: 13px; color: var(--red, #ff6b6b); margin-bottom: 14px; }
+      .lock-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 14px; justify-content: center; margin: 0 auto 18px; }
+      .lock-pad button { width: 72px; height: 72px; border-radius: 50%; background: rgba(255, 255, 255, 0.07); border: 1px solid var(--border); color: var(--text); font-size: 26px; font-weight: 300; cursor: pointer; transition: background 0.12s, transform 0.12s; }
+      .lock-pad button:active { background: rgba(255, 255, 255, 0.18); transform: scale(0.94); }
+      .lock-pad button.ghost { background: transparent; border-color: transparent; font-size: 20px; }
+      .lock-link { background: none; border: 0; color: var(--text-dim); font-size: 13px; cursor: pointer; padding: 8px 12px; }
     </style>
+  <script>try{if(localStorage.getItem("oc_pin"))document.documentElement.classList.add("locked")}catch(e){}</script>
   </head>
   <body>
     <div id="app">
@@ -2138,21 +2204,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
       <main class="content">
         <section class="view" id="view-dashboard">
+          <div class="backup-banner" id="backup-banner"><span id="backup-banner-text">Descarga un respaldo de tus datos.</span><button class="btn btn-gold btn-sm" id="backup-now-btn" type="button">Descargar ahora</button><button class="btn btn-ghost btn-sm" id="backup-later-btn" type="button">Luego</button></div>
           <div class="page-header">
             <div>
               <h1 id="greeting">Buenos días</h1>
               <p id="dash-project-line">Resumen general de tu construcción</p>
             </div>
-            <button class="btn btn-gold" data-open-modal="payment">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M12 5v14M5 12h14" /></svg
-              >Nuevo registro
-            </button>
           </div>
 
           <div class="grid-stats">
@@ -2255,6 +2312,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             </div>
           </div>
 
+          <div class="grid-2" style="margin-bottom: 14px">
+            <div class="card chart-card">
+              <h3>Flujo mensual</h3>
+              <p class="card-sub">Lo que entró y lo que salió · últimos 6 meses</p>
+              <div id="chart-flow"></div>
+              <div class="chart-cap" id="chart-flow-cap">Toca una barra para ver el detalle</div>
+            </div>
+            <div class="card chart-card">
+              <h3>Gasto acumulado</h3>
+              <p class="card-sub">Cómo va creciendo lo que has gastado</p>
+              <div id="chart-cum"></div>
+              <div class="chart-cap" id="chart-cum-cap"></div>
+            </div>
+          </div>
+
           <div class="card" style="margin-bottom: 14px">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px">
               <div><h3 style="margin-bottom: 2px">Pagos próximos</h3><p class="card-sub" style="margin: 0" id="dash-pend-sub">Nada pendiente</p></div>
@@ -2291,6 +2363,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         </section>
 
         <section class="view" id="view-cambio">
+          <div class="seg viewtabs"><button type="button" class="" data-goto="balance">Entradas</button><button type="button" class="active" data-goto="cambio">Cambios USD→DOP</button></div>
+          
           <div class="page-header">
             <div>
               <h1>Cambio de Divisas</h1>
@@ -2484,6 +2558,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         </section>
 
         <section class="view" id="view-pagos">
+          <div class="seg viewtabs"><button type="button" class="active" data-goto="pagos">Realizados</button><button type="button" class="" data-goto="pendientes">Pendientes</button></div>
+          
           <div class="page-header">
             <div>
               <h1>Pagos</h1>
@@ -2550,9 +2626,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         </section>
 
         <section class="view" id="view-balance">
+          <div class="seg viewtabs"><button type="button" class="active" data-goto="balance">Entradas</button><button type="button" class="" data-goto="cambio">Cambios USD→DOP</button></div>
+          
           <div class="page-header">
             <div>
-              <h1>Balance</h1>
+              <h1>Dinero</h1>
               <p>Todo el dinero que entra a la obra: aportes, salario, préstamos, envíos y más, en pesos, dólares u otra moneda</p>
             </div>
             <button class="btn btn-gold" data-open-modal="balance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" /></svg>Agregar dinero</button>
@@ -2585,6 +2663,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         </section>
 
         <section class="view" id="view-pendientes">
+          <div class="seg viewtabs"><button type="button" class="" data-goto="pagos">Realizados</button><button type="button" class="active" data-goto="pendientes">Pendientes</button></div>
+          
           <div class="page-header">
             <div>
               <h1>Pagos pendientes</h1>
@@ -2606,6 +2686,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               <div class="search-box">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg><input id="search-pendings" placeholder="Buscar beneficiario o concepto…" />
               </div>
+              <button class="btn btn-ghost btn-sm" id="ics-btn" type="button">Agregar al calendario</button>
             </div>
             <div class="table-wrap">
               <table>
@@ -2614,6 +2695,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               </table>
             </div>
             <div class="mobile-cards" id="cards-pendings"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-cuentas">
+          <div class="page-header">
+            <div>
+              <h1>Personas y proveedores</h1>
+              <p>Cuánto le has pagado a cada quien y cuánto les debes</p>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-toolbar">
+              <div class="seg" id="people-kind-seg"><button type="button" data-val="people" class="active">Personas</button><button type="button" data-val="vendors">Proveedores</button></div>
+              <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg><input id="search-people" placeholder="Buscar nombre…" /></div>
+            </div>
+            <div class="mobile-cards" id="cards-people" style="display: block"></div>
           </div>
         </section>
 
@@ -2650,76 +2747,14 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
                   step="0.01"
                 />
               </div>
-              <div
-                class="card"
-                style="
-                  margin-bottom: 12px;
-                  padding: 14px 16px;
-                  background: var(--surface-2);
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 10px;
-                  "
-                >
-                  <div>
-                    <h3 style="margin: 0 0 2px">Capital</h3>
-                    <p class="card-sub" style="margin: 0">
-                      Total de balance registrado hasta hoy
-                    </p>
-                  </div>
-                  <button
-                    class="btn btn-gold btn-sm"
-                    data-open-modal="balance"
-                    type="button"
-                  >
-                    + Agregar balance
-                  </button>
-                </div>
-                <div
-                  class="field-row"
-                  style="margin-top: 12px; margin-bottom: 0"
-                >
-                  <div class="field">
-                    <label>En RD$</label>
-                    <div
-                      class="value num"
-                      id="cfg-cap-dop"
-                      style="font-size: 18px"
-                    >
-                      RD$ 0.00
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label>En US$</label>
-                    <div
-                      class="value num"
-                      id="cfg-cap-usd"
-                      style="font-size: 18px"
-                    >
-                      US$ 0.00
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="field-row"
-                style="margin-top: 16px; margin-bottom: 12px"
-              >
-                <div class="field">
-                  <label>Apartamento 1</label
-                  ><input id="cfg-apt-1" placeholder="Apartamento 1" />
-                </div>
-                <div class="field">
-                  <label>Apartamento 2</label
-                  ><input id="cfg-apt-2" placeholder="Apartamento 2" />
-                </div>
-              </div>
+              <div class="field-row" style="margin-top: 16px; margin-bottom: 12px">
+              <div class="field"><label>Apartamento 1</label><input id="cfg-apt-1" placeholder="Apartamento 1" /></div>
+              <div class="field"><label>Presupuesto (RD$)</label><input type="number" id="cfg-apt-b1" min="0" step="0.01" inputmode="decimal" placeholder="Opcional" /></div>
+            </div>
+            <div class="field-row" style="margin-bottom: 12px">
+              <div class="field"><label>Apartamento 2</label><input id="cfg-apt-2" placeholder="Apartamento 2" /></div>
+              <div class="field"><label>Presupuesto (RD$)</label><input type="number" id="cfg-apt-b2" min="0" step="0.01" inputmode="decimal" placeholder="Opcional" /></div>
+            </div>
               <div style="margin-top: 16px">
                 <button class="btn btn-gold" id="cfg-save-btn">
                   Guardar cambios
@@ -2888,6 +2923,32 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               en tiempo real.
             </div>
           </div>
+          <div class="grid-2" style="margin-top: 14px">
+            <div class="card">
+              <h3>Reportes</h3>
+              <p class="card-sub">Para mandar por WhatsApp o abrir en Excel</p>
+              <div class="field" style="margin-bottom: 12px"><label>Mes del reporte</label><input type="month" id="report-month" /></div>
+              <div style="display: flex; flex-direction: column; gap: 10px">
+                <button class="btn btn-gold" id="report-pdf-btn" type="button">Reporte del mes (PDF)</button>
+                <button class="btn btn-ghost" id="report-csv-btn" type="button">Todos los movimientos (Excel / CSV)</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Papelera</h3>
+              <p class="card-sub">Lo que borras se guarda 30 días en este aparato</p>
+              <div id="trash-list"></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top: 14px">
+            <h3>Copias automáticas</h3>
+            <p class="card-sub">Cada día que abres la app se guarda una copia en este aparato (últimos 7 días, sin fotos)</p>
+            <div id="snap-list"></div>
+          </div>
+          <div class="card" style="margin-top: 14px">
+            <h3>Candado con PIN</h3>
+            <p class="card-sub" id="pin-sub">Protege la app en este aparato con un PIN de 4 dígitos</p>
+            <div class="mini-actions" id="pin-actions"></div>
+          </div>
         </section>
       </main>
     </div>
@@ -2981,7 +3042,21 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
       </div>
     </div>
 
-    <div class="more-sheet" id="more-sheet"></div>
+    <div id="lock-screen" role="dialog" aria-modal="true">
+      <div class="lock-box">
+        <div class="lock-title" id="lock-title">Ingresa tu PIN</div>
+        <div class="lock-dots" id="lock-dots"><i></i><i></i><i></i><i></i></div>
+        <div class="lock-msg" id="lock-msg"></div>
+        <div class="lock-pad" id="lock-pad">
+          <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+          <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+          <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+          <button class="ghost" disabled></button><button data-k="0">0</button><button class="ghost" data-k="del" aria-label="Borrar">⌫</button>
+        </div>
+        <button class="lock-link" id="lock-forgot" type="button">¿Olvidaste tu PIN?</button>
+        <button class="lock-link" id="lock-cancel" type="button" style="display: none">Cancelar</button>
+      </div>
+    </div>
     <nav class="bottom-nav" id="bottom-nav"></nav>
 
     <div class="modal-overlay" id="modal-material">
@@ -3335,10 +3410,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               placeholder="0.00"
             />
           </div>
-          <p style="font-size: 12px; color: var(--text-faint); margin: 0">
-            La tasa es siempre introducida manualmente por ti; el sistema nunca
-            la inventa. Se guardará la fecha y hora de esta actualización.
-          </p>
+          <button class="btn btn-ghost btn-sm" id="rate-ref-btn" type="button">Ver tasa de referencia (internet)</button>
+          <p id="rate-ref-msg" style="font-size: 12px; color: var(--text-faint); margin: 10px 0 0">Tú decides la tasa: la de referencia solo se copia al campo y no se guarda hasta que toques "Guardar tasa". Puede diferir de tu casa de cambio.</p>
         </div>
         <div class="modal-foot">
           <button class="btn btn-ghost" data-close-modal>Cancelar</button
@@ -3417,6 +3490,30 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           <div class="field"><label>Notas <span class="hint">(opcional)</span></label><textarea id="pend-notes" placeholder="Detalles adicionales…"></textarea></div>
         </div>
         <div class="modal-foot"><button class="btn btn-ghost" data-close-modal>Cancelar</button><button class="btn btn-gold" id="pend-save-btn">Guardar pendiente</button></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-pendpay">
+      <div class="modal">
+        <div class="modal-head"><h3>Registrar pago</h3><button class="modal-close" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" /></svg></button></div>
+        <div class="modal-body">
+          <p id="pp-info" style="margin: 0 0 14px; font-size: 13.5px; color: var(--text-dim)"></p>
+          <div class="field"><label>Monto que pagas ahora</label><input type="number" id="pp-amount" min="0" step="0.01" inputmode="decimal" /><div class="hint-line" id="pp-hint"></div><div class="warn-text" id="pp-warn" style="display: none"></div></div>
+          <div class="field-row">
+            <div class="field"><label>Fecha del pago</label><input type="date" id="pp-date" /></div>
+            <div class="field"><label>Método</label><select id="pp-method"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>Cheque</option><option>Otro</option></select></div>
+          </div>
+          <p style="margin: 0; font-size: 12px; color: var(--text-faint)">Si pagas menos del saldo, queda como abono y el resto sigue pendiente.</p>
+        </div>
+        <div class="modal-foot"><button class="btn btn-ghost" data-close-modal>Cancelar</button><button class="btn btn-gold" id="pp-save-btn">Registrar pago</button></div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-person">
+      <div class="modal">
+        <div class="modal-head"><h3 id="person-title">Estado de cuenta</h3><button class="modal-close" data-close-modal><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" /></svg></button></div>
+        <div class="modal-body" id="person-body"></div>
+        <div class="modal-foot"><button class="btn btn-ghost" data-close-modal>Cerrar</button><button class="btn btn-gold" id="person-share-btn">Compartir estado</button></div>
       </div>
     </div>
 
@@ -3521,6 +3618,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             exchanges: [],
             balances: [],
             pendings: [],
+            trash: [],
             counters: { payment: 1, material: 1, exchange: 1, balance: 1, pending: 1 },
           };
         }
@@ -3725,6 +3823,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           }
         }
 
+        function getLocalTrash() {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw).trash || [] : [];
+          } catch (e) {
+            return [];
+          }
+        }
+
         function getLocalCachedPendings() {
           try {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -3808,6 +3915,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             exchanges: (exRes.data || []).map((r) => r.data),
             balances: balances,
             pendings: pendings,
+            trash: DATA.trash && DATA.trash.length ? DATA.trash : getLocalTrash(),
           });
           applyOutboxToData();
           cacheLocally();
@@ -4204,102 +4312,48 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
         ICONS.more =
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>';
-        const MOBILE_PRIMARY = ["dashboard", "materiales", "pagos", "pendientes", "balance"];
-        const MOBILE_SHORT = { dashboard: "Inicio", pendientes: "Pendientes" };
+        ICONS.cuentas =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 010 5.6M18 14.5c1.9.8 3 2.6 3 5.5"/></svg>';
+        ICONS.edit =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4"/></svg>';
+        const MOBILE_SHORT = { dashboard: "Inicio", balance: "Dinero", cuentas: "Personas", config: "Ajustes" };
+        const NAV_GROUP = { pendientes: "pagos", cambio: "balance" };
         const NAV_ITEMS = [
           { id: "dashboard", label: "Dashboard", icon: ICONS.dashboard },
-          { id: "cambio", label: "Cambio de Moneda", icon: ICONS.cambio },
           { id: "materiales", label: "Materiales", icon: ICONS.materiales },
           { id: "pagos", label: "Pagos", icon: ICONS.pagos },
-          { id: "pendientes", label: "Pendientes", icon: ICONS.pendientes },
-          { id: "balance", label: "Balance", icon: ICONS.balance },
-          { id: "config", label: "Configuración", icon: ICONS.config },
+          { id: "balance", label: "Dinero", icon: ICONS.balance },
+          { id: "cuentas", label: "Personas", icon: ICONS.cuentas },
+          { id: "config", label: "Ajustes", icon: ICONS.config },
         ];
         let currentView = "dashboard";
 
         function buildNav() {
           const nav = document.getElementById("mainnav");
           nav.innerHTML = NAV_ITEMS.map(
-            (it) =>
-              '<a href="#" class="navlink" data-view="' +
-              it.id +
-              '">' +
-              it.icon +
-              "<span>" +
-              it.label +
-              "</span></a>",
+            (it) => '<a href="#" class="navlink" data-view="' + it.id + '">' + it.icon + "<span>" + it.label + "</span></a>",
           ).join("");
-          nav.querySelectorAll(".navlink").forEach((a) =>
-            a.addEventListener("click", (e) => {
-              e.preventDefault();
-              goToView(a.dataset.view);
-            }),
-          );
-
           const bn = document.getElementById("bottom-nav");
-          const byId = (id) => NAV_ITEMS.find((x) => x.id === id);
-          bn.innerHTML =
-            MOBILE_PRIMARY.map((id) => {
-              const it = byId(id);
-              return (
-                '<a href="#" class="bn-item" data-view="' + it.id + '">' + it.icon +
-                "<span>" + (MOBILE_SHORT[it.id] || it.label) + "</span></a>"
-              );
-            }).join("") +
-            '<a href="#" class="bn-item" data-more="1">' + ICONS.more + "<span>Más</span></a>";
-          const sheet = document.getElementById("more-sheet");
-          sheet.innerHTML = ["cambio", "config"]
-            .map((id) => {
-              const it = byId(id);
-              return (
-                '<a href="#" class="more-item" data-view="' + it.id + '">' + it.icon +
-                "<span>" + (id === "config" ? "Ajustes y respaldo" : it.label) + "</span></a>"
-              );
-            })
-            .join("");
-          bn.querySelectorAll(".bn-item[data-view]").forEach((a) =>
+          bn.innerHTML = NAV_ITEMS.map(
+            (it) =>
+              '<a href="#" class="bn-item" data-view="' + it.id + '">' + it.icon +
+              "<span>" + (MOBILE_SHORT[it.id] || it.label) + "</span></a>",
+          ).join("");
+          document.querySelectorAll(".navlink, .bn-item").forEach((a) =>
             a.addEventListener("click", (e) => {
               e.preventDefault();
               goToView(a.dataset.view);
             }),
           );
-          bn.querySelector(".bn-item[data-more]").addEventListener("click", (e) => {
-            e.preventDefault();
-            sheet.classList.toggle("open");
-          });
-          sheet.querySelectorAll(".more-item").forEach((a) =>
-            a.addEventListener("click", (e) => {
-              e.preventDefault();
-              goToView(a.dataset.view);
-            }),
-          );
-          document.addEventListener("click", (e) => {
-            if (!e.target.closest("#more-sheet") && !e.target.closest("[data-more]"))
-              sheet.classList.remove("open");
-          });
         }
 
         function goToView(id) {
           currentView = id;
-          document
-            .querySelectorAll(".view")
-            .forEach((v) => v.classList.remove("active"));
+          const grp = NAV_GROUP[id] || id;
+          document.querySelectorAll(".view").forEach((v) => v.classList.remove("active"));
           document.getElementById("view-" + id).classList.add("active");
-          document
-            .querySelectorAll(".navlink")
-            .forEach((a) =>
-              a.classList.toggle("active", a.dataset.view === id),
-            );
-          document
-            .querySelectorAll(".bn-item")
-            .forEach((a) =>
-              a.classList.toggle("active", a.dataset.view === id),
-            );
-          const moreBtn = document.querySelector(".bn-item[data-more]");
-          if (moreBtn) moreBtn.classList.toggle("active", id === "cambio" || id === "config");
-          document.querySelectorAll(".more-item").forEach((a) => a.classList.toggle("active", a.dataset.view === id));
-          const ms = document.getElementById("more-sheet");
-          if (ms) ms.classList.remove("open");
+          document.querySelectorAll(".navlink, .bn-item").forEach((a) => a.classList.toggle("active", a.dataset.view === grp));
+          document.querySelectorAll(".viewtabs button").forEach((b) => b.classList.toggle("active", b.dataset.goto === id));
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
@@ -4405,6 +4459,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             resetSeg("bal-currency-seg", "DOP");
             document.getElementById("bal-rate-field").style.display = "none";
           }
+          editingRec = null;
+          document.querySelectorAll("#modal-" + name + " .modal-head h3").forEach((h) => {
+            if (!h.dataset.def) h.dataset.def = h.textContent;
+            h.textContent = h.dataset.def;
+          });
           if (name === "balance") resetBalanceExtras();
           if (name === "pending") resetPendingForm();
           m.classList.add("open");
@@ -4452,6 +4511,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           });
 
         let matPhotoData = null;
+        let editingRec = null;
         let payPhotoData = null;
 
         function resizeImageFile(file, maxW) {
@@ -4640,7 +4700,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               : null;
 
             const item = {
-              id: nextId("material"),
+              id: editingRec && editingRec.kind === "materials" ? editingRec.id : nextId("material"),
               date,
               name,
               unit: document.getElementById("mat-unit").value,
@@ -4657,7 +4717,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               photo: matPhotoData,
               createdAt: Date.now(),
             };
-            DATA.materials.unshift(item);
+            saveEdited("materials", item);
             [
               "mat-name",
               "mat-qty",
@@ -4708,7 +4768,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               : null;
 
             const item = {
-              id: nextId("payment"),
+              id: editingRec && editingRec.kind === "payments" ? editingRec.id : nextId("payment"),
               date,
               beneficiaryType: segValue("pay-type-seg") || "Otro",
               beneficiary,
@@ -4723,7 +4783,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               photo: payPhotoData,
               createdAt: Date.now(),
             };
-            DATA.payments.unshift(item);
+            saveEdited("payments", item);
             [
               "pay-beneficiary",
               "pay-concept",
@@ -4745,7 +4805,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           }
           const cur = segValue("bal-currency-seg") || "DOP";
           const item = {
-            id: nextId("balance"),
+            id: editingRec && editingRec.kind === "balances" ? editingRec.id : nextId("balance"),
             date,
             amount,
             currency: cur === "USD" ? "USD" : "DOP",
@@ -4772,7 +4832,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             item.origRate = orate;
             item.amount = Math.round(amount * orate * 100) / 100;
           }
-          DATA.balances.unshift(item);
+          saveEdited("balances", item);
           syncUpsert("balances", item);
           closeModals();
           toast("Dinero agregado correctamente.", "ok");
@@ -4905,27 +4965,31 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         function deleteRecord(type, id) {
           askConfirm(
             "¿Eliminar este registro?",
-            "Esta acción no se puede deshacer. El registro " +
-              id +
-              " se eliminará permanentemente.",
+            "Se moverá a la papelera por 30 días y lo puedes restaurar desde Ajustes. Registro " + id + ".",
             () => {
+              const item = DATA[type].find((x) => x.id === id);
+              if (!item) return;
+              DATA.trash = DATA.trash || [];
+              DATA.trash.unshift({ kind: type, id: id, item: item, deletedAt: Date.now() });
               DATA[type] = DATA[type].filter((x) => x.id !== id);
+              if (type === "payments") adjustPendingForPayment(item, -1);
               syncDelete(type, id);
-              toast("Registro eliminado.", "ok");
+              toastUndo("Registro eliminado.", () => restoreFromTrash(id));
             },
+            { label: "Eliminar", cls: "btn-danger" },
           );
         }
 
         /* ============================================================
    PDF GENERATION
    ============================================================ */
-        async function downloadBlob(filename, blob) {
+        async function downloadBlob(filename, blob, label) {
           try {
             const dl =
               window.claude ? await window.claude.use("downloads") : null;
             if (dl) {
               await dl.save({ filename, data: blob });
-              toast("PDF descargado.", "ok");
+              toast(label || "PDF descargado.", "ok");
               return;
             }
           } catch (err) {
@@ -4945,7 +5009,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           a.click();
           a.remove();
           setTimeout(() => URL.revokeObjectURL(url), 4000);
-          toast("PDF descargado.", "ok");
+          toast(label || "PDF descargado.", "ok");
         }
 
         function buildReceiptPDF(kind, item) {
@@ -5970,20 +6034,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             DATA.config.ownerName || "";
           document.getElementById("cfg-budget").value =
             DATA.config.budgetTotal || "";
-          document.getElementById("cfg-cap-dop").textContent = money(
-            totalBalanceDOP(),
-            "DOP",
-          );
-          document.getElementById("cfg-cap-usd").textContent = money(
-            totalBalanceUSD(),
-            "USD",
-          );
           const apts = DATA.config.apartments || [
             "Apartamento 1",
             "Apartamento 2",
           ];
           document.getElementById("cfg-apt-1").value = apts[0] || "";
           document.getElementById("cfg-apt-2").value = apts[1] || "";
+          const ab = DATA.config.aptBudgets || {};
+          document.getElementById("cfg-apt-b1").value = ab[apts[0]] || "";
+          document.getElementById("cfg-apt-b2").value = ab[apts[1]] || "";
           if (CONN) {
             document.getElementById("conn-url").value = CONN.url || "";
             document.getElementById("conn-key").value = CONN.key || "";
@@ -6004,11 +6063,12 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
               Number(document.getElementById("cfg-budget").value) || 0,
             );
             DATA.config.apartments = [
-              document.getElementById("cfg-apt-1").value.trim() ||
-                "Apartamento 1",
-              document.getElementById("cfg-apt-2").value.trim() ||
-                "Apartamento 2",
+              document.getElementById("cfg-apt-1").value.trim() || "Apartamento 1",
+              document.getElementById("cfg-apt-2").value.trim() || "Apartamento 2",
             ];
+            DATA.config.aptBudgets = {};
+            DATA.config.aptBudgets[DATA.config.apartments[0]] = Math.max(0, Number(document.getElementById("cfg-apt-b1").value) || 0);
+            DATA.config.aptBudgets[DATA.config.apartments[1]] = Math.max(0, Number(document.getElementById("cfg-apt-b2").value) || 0);
             populateApartmentSelects();
             syncConfig();
             toast("Configuración guardada.", "ok");
@@ -6022,6 +6082,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             });
             const fname = "obra-control-respaldo-" + todayInputVal() + ".json";
             await downloadBlob(fname, blob);
+            try { localStorage.setItem("oc_last_export", String(Date.now())); } catch (e) {}
+            renderBackupBanner();
           });
         document
           .getElementById("import-input")
@@ -6212,25 +6274,31 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           el.addEventListener("change", updateOtherPreview);
         });
 
+
         /* ============================================================
    PAGOS PENDIENTES
    ============================================================ */
+        const gid = (id) => document.getElementById(id);
         let editingPendingId = null;
+        let payingPendingId = null;
         let pendFilter = "open";
         const REPEAT_LABEL = { none: "", weekly: "Cada semana", biweekly: "Cada 15 días", monthly: "Cada mes" };
 
         wireSeg("pend-type-seg");
         wireSeg("pend-currency-seg");
         wireSeg("pend-filter-seg");
-        document.getElementById("pend-currency-seg").addEventListener("segchange", (e) => {
-          document.getElementById("pend-rate-field").style.display = e.detail === "USD" ? "block" : "none";
+        gid("pend-currency-seg").addEventListener("segchange", (e) => {
+          gid("pend-rate-field").style.display = e.detail === "USD" ? "block" : "none";
         });
-        document.getElementById("pend-filter-seg").addEventListener("segchange", (e) => {
+        gid("pend-filter-seg").addEventListener("segchange", (e) => {
           pendFilter = e.detail;
           renderPendientes();
         });
-        document.getElementById("search-pendings").addEventListener("input", renderPendientes);
+        gid("search-pendings").addEventListener("input", renderPendientes);
 
+        function pendRemaining(p) {
+          return Math.max(0, (Number(p.amount) || 0) - (Number(p.paidSoFar) || 0));
+        }
         function pendDays(p) {
           const a = String(p.dueDate || "").split("-").map(Number);
           const b = todayInputVal().split("-").map(Number);
@@ -6255,8 +6323,8 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         function sumPend(list) {
           const r = { dop: 0, usd: 0, count: list.length };
           list.forEach((p) => {
-            if (p.currency === "USD") r.usd += Number(p.amount) || 0;
-            else r.dop += Number(p.amount) || 0;
+            if (p.currency === "USD") r.usd += pendRemaining(p);
+            else r.dop += pendRemaining(p);
           });
           return r;
         }
@@ -6274,90 +6342,61 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
         function resetPendingForm() {
           editingPendingId = null;
-          document.getElementById("pend-modal-title").textContent = "Nuevo pago pendiente";
-          document.getElementById("pend-save-btn").textContent = "Guardar pendiente";
-          ["pend-beneficiary", "pend-concept", "pend-amount", "pend-rate", "pend-notes"].forEach(
-            (id) => (document.getElementById(id).value = ""),
-          );
-          document.getElementById("pend-date").value = todayInputVal();
-          document.getElementById("pend-repeat").value = "none";
-          document.getElementById("pend-method").selectedIndex = 0;
-          const ap = document.getElementById("pend-apartment");
-          if (ap.options.length) ap.selectedIndex = 0;
+          gid("pend-modal-title").textContent = "Nuevo pago pendiente";
+          gid("pend-save-btn").textContent = "Guardar pendiente";
+          ["pend-beneficiary", "pend-concept", "pend-amount", "pend-rate", "pend-notes"].forEach((id) => (gid(id).value = ""));
+          gid("pend-date").value = todayInputVal();
+          gid("pend-repeat").value = "none";
+          gid("pend-method").selectedIndex = 0;
+          if (gid("pend-apartment").options.length) gid("pend-apartment").selectedIndex = 0;
           resetSeg("pend-type-seg", "Ferretería");
           resetSeg("pend-currency-seg", "DOP");
-          document.getElementById("pend-rate-field").style.display = "none";
+          gid("pend-rate-field").style.display = "none";
         }
         function editPending(id) {
           const p = (DATA.pendings || []).find((x) => x.id === id);
           if (!p) return;
           openModal("pending");
           editingPendingId = id;
-          document.getElementById("pend-modal-title").textContent = "Editar pago pendiente";
-          document.getElementById("pend-save-btn").textContent = "Guardar cambios";
-          document.getElementById("pend-beneficiary").value = p.beneficiary || "";
-          document.getElementById("pend-concept").value = p.concept || "";
-          document.getElementById("pend-amount").value = p.amount || "";
-          document.getElementById("pend-rate").value = p.rate || "";
-          document.getElementById("pend-date").value = p.dueDate || todayInputVal();
-          document.getElementById("pend-repeat").value = p.repeat || "none";
-          document.getElementById("pend-method").value = p.method || "Efectivo";
-          document.getElementById("pend-notes").value = p.notes || "";
+          gid("pend-modal-title").textContent = "Editar pago pendiente";
+          gid("pend-save-btn").textContent = "Guardar cambios";
+          gid("pend-beneficiary").value = p.beneficiary || "";
+          gid("pend-concept").value = p.concept || "";
+          gid("pend-amount").value = p.amount || "";
+          gid("pend-rate").value = p.rate || "";
+          gid("pend-date").value = p.dueDate || todayInputVal();
+          gid("pend-repeat").value = p.repeat || "none";
+          gid("pend-method").value = p.method || "Efectivo";
+          gid("pend-notes").value = p.notes || "";
           resetSeg("pend-type-seg", p.beneficiaryType || "Otro");
           resetSeg("pend-currency-seg", p.currency === "USD" ? "USD" : "DOP");
-          document.getElementById("pend-rate-field").style.display = p.currency === "USD" ? "block" : "none";
-          const ap = document.getElementById("pend-apartment");
-          if (p.apartment) ap.value = p.apartment;
+          gid("pend-rate-field").style.display = p.currency === "USD" ? "block" : "none";
+          if (p.apartment) gid("pend-apartment").value = p.apartment;
         }
-
-        document.getElementById("pend-save-btn").addEventListener("click", () => {
-          const beneficiary = document.getElementById("pend-beneficiary").value.trim();
-          const concept = document.getElementById("pend-concept").value.trim();
-          const amount = Number(document.getElementById("pend-amount").value);
-          const dueDate = document.getElementById("pend-date").value;
-          if (!beneficiary) {
-            markInvalid(document.getElementById("pend-beneficiary"));
-            toast("Indica a quién se le debe pagar.", "warn");
-            return;
-          }
-          if (!concept) {
-            markInvalid(document.getElementById("pend-concept"));
-            toast("Describe el concepto del pago.", "warn");
-            return;
-          }
-          if (!amount || amount <= 0) {
-            markInvalid(document.getElementById("pend-amount"));
-            toast("El monto debe ser mayor a cero.", "warn");
-            return;
-          }
-          if (!dueDate) {
-            markInvalid(document.getElementById("pend-date"));
-            toast("Elige la fecha de vencimiento.", "warn");
-            return;
-          }
+        gid("pend-save-btn").addEventListener("click", () => {
+          const beneficiary = gid("pend-beneficiary").value.trim();
+          const concept = gid("pend-concept").value.trim();
+          const amount = Number(gid("pend-amount").value);
+          const dueDate = gid("pend-date").value;
+          if (!beneficiary) { markInvalid(gid("pend-beneficiary")); toast("Indica a quién se le debe pagar.", "warn"); return; }
+          if (!concept) { markInvalid(gid("pend-concept")); toast("Describe el concepto del pago.", "warn"); return; }
+          if (!amount || amount <= 0) { markInvalid(gid("pend-amount")); toast("El monto debe ser mayor a cero.", "warn"); return; }
+          if (!dueDate) { markInvalid(gid("pend-date")); toast("Elige la fecha de vencimiento.", "warn"); return; }
           const currency = segValue("pend-currency-seg") || "DOP";
           const fields = {
-            beneficiaryType: segValue("pend-type-seg") || "Otro",
-            beneficiary,
-            concept,
-            amount,
-            currency,
-            rate: currency === "USD" ? Number(document.getElementById("pend-rate").value) || null : null,
-            dueDate,
-            repeat: document.getElementById("pend-repeat").value || "none",
-            apartment: document.getElementById("pend-apartment").value || "General",
-            method: document.getElementById("pend-method").value,
-            notes: document.getElementById("pend-notes").value.trim(),
+            beneficiaryType: segValue("pend-type-seg") || "Otro", beneficiary, concept, amount, currency,
+            rate: currency === "USD" ? Number(gid("pend-rate").value) || null : null,
+            dueDate, repeat: gid("pend-repeat").value || "none",
+            apartment: gid("pend-apartment").value || "General",
+            method: gid("pend-method").value, notes: gid("pend-notes").value.trim(),
           };
-          let item;
           const existing = editingPendingId && DATA.pendings.find((x) => x.id === editingPendingId);
+          let item;
           if (existing) {
             item = Object.assign(existing, fields);
+            if (pendRemaining(item) <= 0.004 && item.status !== "paid") { item.status = "paid"; item.paidDate = item.paidDate || todayInputVal(); }
           } else {
-            item = Object.assign(
-              { id: nextId("pending"), status: "pending", paidAt: null, paymentId: null, createdAt: Date.now() },
-              fields,
-            );
+            item = Object.assign({ id: nextId("pending"), status: "pending", paidSoFar: 0, abonos: [], createdAt: Date.now() }, fields);
             DATA.pendings.unshift(item);
           }
           syncUpsert("pendings", item);
@@ -6367,76 +6406,119 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
         function nextDueDate(due, repeat) {
           const a = due.split("-").map(Number);
-          if (repeat === "weekly" || repeat === "biweekly") {
-            const t = new Date(Date.UTC(a[0], a[1] - 1, a[2] + (repeat === "weekly" ? 7 : 14)));
-            return t.getUTCFullYear() + "-" + String(t.getUTCMonth() + 1).padStart(2, "0") + "-" + String(t.getUTCDate()).padStart(2, "0");
-          }
-          let y = a[0];
-          let m = a[1] + 1;
+          const f = (t) => t.getUTCFullYear() + "-" + String(t.getUTCMonth() + 1).padStart(2, "0") + "-" + String(t.getUTCDate()).padStart(2, "0");
+          if (repeat === "weekly" || repeat === "biweekly")
+            return f(new Date(Date.UTC(a[0], a[1] - 1, a[2] + (repeat === "weekly" ? 7 : 14))));
+          let y = a[0], m = a[1] + 1;
           if (m > 12) { m = 1; y += 1; }
-          const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
-          const d = Math.min(a[2], last);
-          return y + "-" + String(m).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+          return y + "-" + String(m).padStart(2, "0") + "-" + String(Math.min(a[2], new Date(Date.UTC(y, m, 0)).getUTCDate())).padStart(2, "0");
         }
 
-        function markPendingPaid(id) {
+        /* --- pagar / abonar --- */
+        function walletFor(p) { return p.currency === "USD" ? cashUSD() : cashDOP(); }
+        function openPendPay(id) {
           const p = (DATA.pendings || []).find((x) => x.id === id);
           if (!p || p.status === "paid") return;
-          const wallet = p.currency === "USD" ? cashUSD() : cashDOP();
-          const short = wallet - Number(p.amount) < -0.004;
-          let text =
-            money(p.amount, p.currency) + " a " + p.beneficiary + " se registrará en Pagos con la fecha de hoy.";
-          if (short)
-            text += " Ojo: no tienes suficiente " + (p.currency === "USD" ? "US$" : "RD$") + " disponible para cubrirlo.";
-          if (p.repeat && p.repeat !== "none") text += " Se creará el siguiente pago automáticamente.";
-          askConfirm(
-            "¿Marcar como pagado?",
-            text,
-            () => {
-              const pay = {
-                id: nextId("payment"),
-                date: todayInputVal(),
-                beneficiaryType: p.beneficiaryType || "Otro",
-                beneficiary: p.beneficiary,
-                concept: p.concept,
-                amount: Number(p.amount),
-                currency: p.currency === "USD" ? "USD" : "DOP",
-                rate: p.currency === "USD" ? Number(p.rate) || Number(DATA.config.manualRate) || 0 : null,
-                apartment: p.apartment || "General",
-                method: p.method || "Efectivo",
-                notes: p.notes || "",
-                photo: null,
-                fromPending: p.id,
-                createdAt: Date.now(),
-              };
-              DATA.payments.unshift(pay);
-              syncUpsert("payments", pay);
-              p.status = "paid";
-              p.paidAt = Date.now();
-              p.paidDate = todayInputVal();
-              p.paymentId = pay.id;
-              syncUpsert("pendings", p);
-              if (p.repeat && p.repeat !== "none") {
-                const next = Object.assign({}, p, {
-                  id: nextId("pending"),
-                  dueDate: nextDueDate(p.dueDate, p.repeat),
-                  status: "pending",
-                  paidAt: null,
-                  paidDate: null,
-                  paymentId: null,
-                  createdAt: Date.now(),
-                });
-                DATA.pendings.unshift(next);
-                syncUpsert("pendings", next);
-              }
-              toast("Pago registrado en Pagos.", "ok");
-            },
-            { label: "Sí, ya pagué", cls: "btn-gold" },
-          );
+          payingPendingId = id;
+          openModal("pendpay");
+          const rem = pendRemaining(p);
+          gid("pp-info").textContent = p.concept + " · " + p.beneficiary;
+          gid("pp-amount").value = rem.toFixed(2);
+          gid("pp-date").value = todayInputVal();
+          gid("pp-method").value = p.method || "Efectivo";
+          gid("pp-hint").textContent = "Saldo pendiente: " + money(rem, p.currency) + " · Disponible: " + money(walletFor(p), p.currency);
+          checkPpWarn();
+        }
+        function checkPpWarn() {
+          const p = (DATA.pendings || []).find((x) => x.id === payingPendingId);
+          const w = gid("pp-warn");
+          if (!p) return;
+          const a = Number(gid("pp-amount").value) || 0;
+          const bad = a > walletFor(p) + 0.004;
+          w.style.display = bad ? "block" : "none";
+          w.textContent = bad ? "Ojo: no tienes suficiente " + (p.currency === "USD" ? "US$" : "RD$") + " disponible para este pago." : "";
+        }
+        gid("pp-amount").addEventListener("input", checkPpWarn);
+        gid("pp-save-btn").addEventListener("click", () => {
+          const p = (DATA.pendings || []).find((x) => x.id === payingPendingId);
+          if (!p) return;
+          const rem = pendRemaining(p);
+          const amt = Math.round((Number(gid("pp-amount").value) || 0) * 100) / 100;
+          if (amt <= 0 || amt > rem + 0.004) {
+            markInvalid(gid("pp-amount"));
+            toast("El monto debe ser mayor a cero y no pasar el saldo (" + money(rem, p.currency) + ").", "warn");
+            return;
+          }
+          const partial = amt < rem - 0.004;
+          const date = gid("pp-date").value || todayInputVal();
+          const pay = {
+            id: nextId("payment"), date, beneficiaryType: p.beneficiaryType || "Otro", beneficiary: p.beneficiary,
+            concept: p.concept + (partial || (p.paidSoFar || 0) > 0 ? " (abono)" : ""), amount: amt,
+            currency: p.currency === "USD" ? "USD" : "DOP",
+            rate: p.currency === "USD" ? Number(p.rate) || Number(DATA.config.manualRate) || 0 : null,
+            apartment: p.apartment || "General", method: gid("pp-method").value, notes: p.notes || "",
+            photo: null, fromPending: p.id, createdAt: Date.now(),
+          };
+          DATA.payments.unshift(pay);
+          syncUpsert("payments", pay);
+          p.paidSoFar = Math.round(((Number(p.paidSoFar) || 0) + amt) * 100) / 100;
+          p.abonos = (p.abonos || []).concat([{ paymentId: pay.id, amount: amt, date }]);
+          if (pendRemaining(p) <= 0.004) {
+            p.status = "paid"; p.paidAt = Date.now(); p.paidDate = date; p.paymentId = pay.id;
+            if (p.repeat && p.repeat !== "none") {
+              const next = Object.assign({}, p, {
+                id: nextId("pending"), dueDate: nextDueDate(p.dueDate, p.repeat), status: "pending",
+                paidSoFar: 0, abonos: [], paidAt: null, paidDate: null, paymentId: null, createdAt: Date.now(),
+              });
+              DATA.pendings.unshift(next);
+              syncUpsert("pendings", next);
+            }
+          }
+          syncUpsert("pendings", p);
+          closeModals();
+          toast(partial ? "Abono registrado. Queda " + money(pendRemaining(p), p.currency) + "." : "Pago completo registrado en Pagos.", "ok");
+        });
+        function adjustPendingForPayment(pay, sign) {
+          if (!pay || !pay.fromPending) return;
+          const p = (DATA.pendings || []).find((x) => x.id === pay.fromPending);
+          if (!p) return;
+          p.paidSoFar = Math.max(0, (Number(p.paidSoFar) || 0) + sign * Number(pay.amount));
+          p.abonos = (p.abonos || []).filter((a) => a.paymentId !== pay.id);
+          if (sign > 0) p.abonos.push({ paymentId: pay.id, amount: pay.amount, date: pay.date });
+          if (pendRemaining(p) > 0.004) { p.status = "pending"; p.paidAt = null; p.paidDate = null; }
+          else p.status = "paid";
+          syncUpsert("pendings", p);
         }
 
+        /* --- calendario (.ics) --- */
+        function icsEsc(t) { return String(t).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n"); }
+        function icsDay(d, add) {
+          const a = d.split("-").map(Number);
+          const t = new Date(Date.UTC(a[0], a[1] - 1, a[2] + (add || 0)));
+          return t.getUTCFullYear() + String(t.getUTCMonth() + 1).padStart(2, "0") + String(t.getUTCDate()).padStart(2, "0");
+        }
+        async function exportPendingsICS() {
+          const open = openPendings();
+          if (!open.length) { toast("No hay pagos pendientes para agregar al calendario.", "warn"); return; }
+          const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+          const rr = { weekly: "RRULE:FREQ=WEEKLY", biweekly: "RRULE:FREQ=WEEKLY;INTERVAL=2", monthly: "RRULE:FREQ=MONTHLY" };
+          const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Obra Control//ES", "CALSCALE:GREGORIAN"];
+          open.forEach((p) => {
+            const sum = "Pagar " + money(pendRemaining(p), p.currency) + " - " + p.concept + " (" + p.beneficiary + ")";
+            L.push("BEGIN:VEVENT", "UID:" + p.id + "@obra-control", "DTSTAMP:" + stamp,
+              "DTSTART;VALUE=DATE:" + icsDay(p.dueDate, 0), "DTEND;VALUE=DATE:" + icsDay(p.dueDate, 1),
+              "SUMMARY:" + icsEsc(sum));
+            if (rr[p.repeat]) L.push(rr[p.repeat]);
+            L.push("BEGIN:VALARM", "TRIGGER:-PT15H", "ACTION:DISPLAY", "DESCRIPTION:" + icsEsc(sum), "END:VALARM",
+              "BEGIN:VALARM", "TRIGGER:PT9H", "ACTION:DISPLAY", "DESCRIPTION:" + icsEsc("Hoy: " + sum), "END:VALARM", "END:VEVENT");
+          });
+          L.push("END:VCALENDAR");
+          await downloadBlob("pagos-pendientes.ics", new Blob([L.join("\r\n")], { type: "text/calendar" }), "Calendario descargado. Ábrelo para agregarlo.");
+        }
+        gid("ics-btn").addEventListener("click", exportPendingsICS);
+
         function setNavBadge(n) {
-          document.querySelectorAll('[data-view="pendientes"]').forEach((a) => {
+          document.querySelectorAll('.navlink[data-view="pagos"], .bn-item[data-view="pagos"], .viewtabs [data-goto="pendientes"]').forEach((a) => {
             const old = a.querySelector(".nav-badge");
             if (old) old.remove();
             if (n > 0) {
@@ -6451,24 +6533,22 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         function renderPendientes() {
           if (!DATA.pendings) DATA.pendings = [];
           const t = pendingTotals();
-          document.getElementById("pd-over").textContent = moneyMix(t.over.dop, t.over.usd);
-          document.getElementById("pd-over-sub").textContent = t.over.count + " pago" + (t.over.count === 1 ? "" : "s") + " vencido" + (t.over.count === 1 ? "" : "s");
-          document.getElementById("pd-week").textContent = moneyMix(t.week.dop, t.week.usd);
-          document.getElementById("pd-week-sub").textContent = t.week.count + " pago" + (t.week.count === 1 ? "" : "s");
-          document.getElementById("pd-total").textContent = moneyMix(t.all.dop, t.all.usd);
-          document.getElementById("pd-total-sub").textContent = t.all.count + " pago" + (t.all.count === 1 ? "" : "s") + " por hacer";
-          const leftDop = cashDOP() - t.all.dop;
-          const leftUsd = cashUSD() - t.all.usd;
-          const leftEl = document.getElementById("pd-left");
+          const pl = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+          gid("pd-over").textContent = moneyMix(t.over.dop, t.over.usd);
+          gid("pd-over-sub").textContent = pl(t.over.count, "pago") + " vencido" + (t.over.count === 1 ? "" : "s");
+          gid("pd-week").textContent = moneyMix(t.week.dop, t.week.usd);
+          gid("pd-week-sub").textContent = pl(t.week.count, "pago");
+          gid("pd-total").textContent = moneyMix(t.all.dop, t.all.usd);
+          gid("pd-total-sub").textContent = pl(t.all.count, "pago") + " por hacer";
+          const leftDop = cashDOP() - t.all.dop, leftUsd = cashUSD() - t.all.usd;
+          const leftEl = gid("pd-left");
           leftEl.textContent = money(leftDop, "DOP") + (Math.abs(cashUSD()) > 0.004 || t.all.usd > 0 ? " · " + money(leftUsd, "USD") : "");
-          leftEl.style.color = leftDop < -0.004 || leftUsd < -0.004 ? "var(--red)" : "";
-          document.getElementById("pd-left-sub").textContent =
-            leftDop < -0.004 || leftUsd < -0.004 ? "No alcanza para todo lo pendiente" : "Si pagas todo lo pendiente";
+          const short = leftDop < -0.004 || leftUsd < -0.004;
+          leftEl.style.color = short ? "var(--red)" : "";
+          gid("pd-left-sub").textContent = short ? "No alcanza para todo lo pendiente" : "Si pagas todo lo pendiente";
 
-          const q = (document.getElementById("search-pendings").value || "").toLowerCase();
-          let list = (DATA.pendings || []).filter(
-            (p) => (p.beneficiary || "").toLowerCase().includes(q) || (p.concept || "").toLowerCase().includes(q),
-          );
+          const q = (gid("search-pendings").value || "").toLowerCase();
+          let list = (DATA.pendings || []).filter((p) => (p.beneficiary || "").toLowerCase().includes(q) || (p.concept || "").toLowerCase().includes(q));
           if (pendFilter === "open") list = list.filter((p) => p.status !== "paid");
           else if (pendFilter === "over") list = list.filter((p) => p.status !== "paid" && pendDays(p) < 0);
           else if (pendFilter === "soon") list = list.filter((p) => p.status !== "paid" && pendDays(p) >= 0 && pendDays(p) <= 7);
@@ -6476,91 +6556,688 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           if (pendFilter === "paid") list.sort((a, b) => (b.paidAt || 0) - (a.paidAt || 0));
           else list.sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate)));
 
-          const tbody = document.getElementById("tbl-pendings");
-          const cards = document.getElementById("cards-pendings");
-          const emptyMsg =
-            pendFilter === "paid" ? "Todavía no has marcado pagos como pagados."
-            : pendFilter === "over" ? "No tienes pagos vencidos. 👍"
-            : "No hay pagos pendientes en esta lista.";
-          const emptyHtml =
-            '<div class="empty-state">' + ICONS.empty + "<p>" + emptyMsg + '</p><button class="btn btn-gold btn-sm" data-open-modal="pending">Agregar pendiente</button></div>';
+          const tbody = gid("tbl-pendings"), cards = gid("cards-pendings");
+          const emptyMsg = pendFilter === "paid" ? "Todavía no hay pagos completados." : pendFilter === "over" ? "No tienes pagos vencidos. 👍" : "No hay pagos pendientes en esta lista.";
+          const emptyHtml = '<div class="empty-state">' + ICONS.empty + "<p>" + emptyMsg + '</p><button class="btn btn-gold btn-sm" data-open-modal="pending">Agregar pendiente</button></div>';
           if (!list.length) {
             tbody.innerHTML = '<tr><td colspan="5">' + emptyHtml + "</td></tr>";
             cards.innerHTML = emptyHtml;
           } else {
+            const amt = (p) => p.status === "paid" ? money(p.amount, p.currency) : money(pendRemaining(p), p.currency);
+            const sub2 = (p) => (p.paidSoFar > 0 && p.status !== "paid" ? "Abonado " + money(p.paidSoFar, p.currency) + " de " + money(p.amount, p.currency) : "");
             const acts = (p, wide) =>
-              p.status === "paid" ?
-                '<button class="icon-btn" title="Eliminar" data-del-pending="' + p.id + '">' + ICONS.trash + "</button>"
-              : (wide ?
-                  '<button class="btn btn-gold btn-sm" style="flex:2" data-pend-pay="' + p.id + '">Marcar pagado</button>' +
-                  '<button class="btn btn-ghost btn-sm" style="flex:1" data-pend-edit="' + p.id + '">Editar</button>' +
-                  '<button class="btn btn-danger btn-sm" style="flex:1" data-del-pending="' + p.id + '">Borrar</button>'
-                : '<button class="btn btn-gold btn-sm" data-pend-pay="' + p.id + '">Pagado</button>' +
-                  '<button class="btn btn-ghost btn-sm" data-pend-edit="' + p.id + '">Editar</button>' +
-                  '<button class="icon-btn" title="Eliminar" data-del-pending="' + p.id + '">' + ICONS.trash + "</button>");
-            tbody.innerHTML = list
-              .map((p) => {
-                const st = pendState(p);
-                return (
-                  "<tr><td>" + fmtDateInput(p.dueDate) + (REPEAT_LABEL[p.repeat] ? '<div style="font-size:11px;color:var(--text-dim)">' + REPEAT_LABEL[p.repeat] + "</div>" : "") +
-                  "</td><td><strong>" + escapeHtml(p.concept) + '</strong><div style="font-size:11.5px;color:var(--text-dim)">' + escapeHtml(p.beneficiary) +
-                  (p.apartment && p.apartment !== "General" ? " · " + escapeHtml(p.apartment) : "") + '</div></td><td class="num">' + money(p.amount, p.currency) +
-                  '</td><td><span class="tag ' + st.cls + '">' + st.label + '</span></td><td><div class="row-actions">' + acts(p, false) + "</div></td></tr>"
-                );
-              })
-              .join("");
-            cards.innerHTML = list
-              .map((p) => {
-                const st = pendState(p);
-                return (
-                  '<div class="mrow"><div class="mrow-top"><div><div class="mrow-title">' + money(p.amount, p.currency) +
-                  '</div><div class="mrow-sub">' + escapeHtml(p.concept) + " · " + escapeHtml(p.beneficiary) +
-                  (p.apartment && p.apartment !== "General" ? " · " + escapeHtml(p.apartment) : "") + "</div>" +
-                  '<div class="mrow-sub">' + (p.status === "paid" ? "Pagado el " + fmtDateInput(p.paidDate) : "Vence " + fmtDateInput(p.dueDate)) +
-                  (REPEAT_LABEL[p.repeat] ? " · " + REPEAT_LABEL[p.repeat] : "") + '</div></div></div><div class="mrow-meta"><span class="tag ' + st.cls + '">' + st.label +
-                  '</span><span class="tag ' + (typeColor[p.beneficiaryType] || "blue") + '">' + escapeHtml(p.beneficiaryType || "Otro") +
-                  '</span></div><div class="mrow-actions">' + acts(p, true) + "</div></div>"
-                );
-              })
-              .join("");
+              p.status === "paid" ? '<button class="icon-btn" title="Eliminar" data-del-pending="' + p.id + '">' + ICONS.trash + "</button>"
+              : wide ?
+                '<button class="btn btn-gold btn-sm" style="flex:2" data-pend-pay="' + p.id + '">Pagar / abonar</button>' +
+                '<button class="btn btn-ghost btn-sm" style="flex:1" data-pend-edit="' + p.id + '">Editar</button>' +
+                '<button class="btn btn-danger btn-sm" style="flex:1" data-del-pending="' + p.id + '">Borrar</button>'
+              : '<button class="btn btn-gold btn-sm" data-pend-pay="' + p.id + '">Pagar</button>' +
+                '<button class="btn btn-ghost btn-sm" data-pend-edit="' + p.id + '">Editar</button>' +
+                '<button class="icon-btn" title="Eliminar" data-del-pending="' + p.id + '">' + ICONS.trash + "</button>";
+            tbody.innerHTML = list.map((p) => {
+              const st = pendState(p);
+              return "<tr><td>" + fmtDateInput(p.dueDate) + (REPEAT_LABEL[p.repeat] ? '<div style="font-size:11px;color:var(--text-dim)">' + REPEAT_LABEL[p.repeat] + "</div>" : "") +
+                "</td><td><strong>" + escapeHtml(p.concept) + '</strong><div style="font-size:11.5px;color:var(--text-dim)">' + escapeHtml(p.beneficiary) +
+                (p.apartment && p.apartment !== "General" ? " · " + escapeHtml(p.apartment) : "") + "</div></td>" +
+                '<td class="num">' + amt(p) + (sub2(p) ? '<div style="font-size:11px;color:var(--text-dim)">' + sub2(p) + "</div>" : "") +
+                '</td><td><span class="tag ' + st.cls + '">' + st.label + '</span></td><td><div class="row-actions">' + acts(p, false) + "</div></td></tr>";
+            }).join("");
+            cards.innerHTML = list.map((p) => {
+              const st = pendState(p);
+              return '<div class="mrow"><div class="mrow-top"><div><div class="mrow-title">' + amt(p) + '</div><div class="mrow-sub">' + escapeHtml(p.concept) + " · " + escapeHtml(p.beneficiary) +
+                (p.apartment && p.apartment !== "General" ? " · " + escapeHtml(p.apartment) : "") + "</div>" +
+                '<div class="mrow-sub">' + (p.status === "paid" ? "Pagado el " + fmtDateInput(p.paidDate) : "Vence " + fmtDateInput(p.dueDate)) + (REPEAT_LABEL[p.repeat] ? " · " + REPEAT_LABEL[p.repeat] : "") + "</div>" +
+                (sub2(p) ? '<div class="mrow-sub">' + sub2(p) + "</div>" : "") +
+                '</div></div><div class="mrow-meta"><span class="tag ' + st.cls + '">' + st.label + '</span><span class="tag ' + (typeColor[p.beneficiaryType] || "blue") + '">' + escapeHtml(p.beneficiaryType || "Otro") +
+                '</span></div><div class="mrow-actions">' + acts(p, true) + "</div></div>";
+            }).join("");
           }
 
-          // Resumen en el Dashboard
           const open = openPendings().sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate)));
-          const sub = document.getElementById("dash-pend-sub");
-          const dl = document.getElementById("dash-pend-list");
-          if (sub && dl) {
-            sub.textContent = open.length
-              ? open.length + " por pagar · " + moneyMix(t.all.dop, t.all.usd)
-              : "Nada pendiente por ahora";
-            dl.innerHTML = open.length
-              ? open
-                  .slice(0, 4)
-                  .map((p) => {
-                    const st = pendState(p);
-                    return (
-                      '<div class="pend-row"><div><div class="pr-title">' + escapeHtml(p.concept) + '</div><div class="pr-sub">' + escapeHtml(p.beneficiary) +
-                      " · vence " + fmtDateInput(p.dueDate) + '</div></div><div><div class="pr-amt num">' + money(p.amount, p.currency) +
-                      '</div><div style="text-align:right"><span class="tag ' + st.cls + '">' + st.label + "</span></div></div></div>"
-                    );
-                  })
-                  .join("")
-              : '<div class="empty-state">' + ICONS.empty + "<p>No tienes pagos por hacer.</p></div>";
+          if (gid("dash-pend-sub") && gid("dash-pend-list")) {
+            gid("dash-pend-sub").textContent = open.length ? pl(open.length, "pago") + " por hacer · " + moneyMix(t.all.dop, t.all.usd) : "Nada pendiente por ahora";
+            gid("dash-pend-list").innerHTML = open.length ? open.slice(0, 4).map((p) => {
+              const st = pendState(p);
+              return '<div class="pend-row"><div><div class="pr-title">' + escapeHtml(p.concept) + '</div><div class="pr-sub">' + escapeHtml(p.beneficiary) + " · vence " + fmtDateInput(p.dueDate) +
+                '</div></div><div><div class="pr-amt num">' + money(pendRemaining(p), p.currency) + '</div><div style="text-align:right"><span class="tag ' + st.cls + '">' + st.label + "</span></div></div></div>";
+            }).join("") : '<div class="empty-state">' + ICONS.empty + "<p>No tienes pagos por hacer.</p></div>";
           }
-
           setNavBadge(open.filter((p) => pendDays(p) <= 0).length);
         }
 
-        document.addEventListener("click", (e) => {
-          const pay = e.target.closest("[data-pend-pay]");
-          if (pay) { markPendingPaid(pay.dataset.pendPay); return; }
-          const ed = e.target.closest("[data-pend-edit]");
-          if (ed) { editPending(ed.dataset.pendEdit); return; }
-          const del = e.target.closest("[data-del-pending]");
-          if (del) { deleteRecord("pendings", del.dataset.delPending); return; }
-          const go = e.target.closest("[data-goto]");
-          if (go) { goToView(go.dataset.goto); return; }
+        /* ============================================================
+   EDITAR REGISTROS
+   ============================================================ */
+        function saveEdited(kind, item) {
+          if (editingRec && editingRec.kind === kind) {
+            const i = DATA[kind].findIndex((x) => x.id === editingRec.id);
+            editingRec = null;
+            if (i >= 0) {
+              item.createdAt = DATA[kind][i].createdAt || item.createdAt;
+              if (DATA[kind][i].fromPending) item.fromPending = DATA[kind][i].fromPending;
+              DATA[kind][i] = item;
+              return;
+            }
+          }
+          DATA[kind].unshift(item);
+        }
+        function setModalTitle(name, text) {
+          const h = document.querySelector("#modal-" + name + " .modal-head h3");
+          if (h) h.textContent = text;
+        }
+        function setPhoto(prefix, data) {
+          gid(prefix + "-photo-preview").innerHTML = data ? '<img src="' + data + '" alt="" style="max-width:100%;max-height:120px;border-radius:12px" />' : "";
+        }
+        function editRecord(kind, id) {
+          if (kind === "payment") {
+            const it = DATA.payments.find((x) => x.id === id);
+            if (!it) return;
+            openModal("payment");
+            editingRec = { kind: "payments", id };
+            setModalTitle("payment", "Editar pago");
+            resetSeg("pay-type-seg", it.beneficiaryType || "Otro");
+            gid("pay-beneficiary").value = it.beneficiary || "";
+            gid("pay-concept").value = it.concept || "";
+            gid("pay-amount").value = it.amount || "";
+            resetSeg("pay-currency-seg", it.currency === "USD" ? "USD" : "DOP");
+            gid("pay-rate-field").style.display = it.currency === "USD" ? "block" : "none";
+            gid("pay-rate").value = it.rate || "";
+            gid("pay-apartment").value = it.apartment || "General";
+            gid("pay-date").value = it.date || todayInputVal();
+            gid("pay-method").value = it.method || "Efectivo";
+            gid("pay-notes").value = it.notes || "";
+            payPhotoData = it.photo || null;
+            setPhoto("pay", payPhotoData);
+          } else if (kind === "material") {
+            const it = DATA.materials.find((x) => x.id === id);
+            if (!it) return;
+            openModal("material");
+            editingRec = { kind: "materials", id };
+            setModalTitle("material", "Editar compra");
+            gid("mat-name").value = it.name || "";
+            gid("mat-qty").value = it.quantity || "";
+            gid("mat-unit").value = it.unit || "";
+            gid("mat-price").value = it.unitPrice || "";
+            resetSeg("mat-currency-seg", it.currency === "USD" ? "USD" : "DOP");
+            gid("mat-rate-field").style.display = it.currency === "USD" ? "block" : "none";
+            gid("mat-rate").value = it.rate || "";
+            gid("mat-provider").value = it.provider && it.provider !== "Sin especificar" ? it.provider : "";
+            gid("mat-apartment").value = it.apartment || "General";
+            gid("mat-method").value = it.method || "Efectivo";
+            gid("mat-date").value = it.date || todayInputVal();
+            gid("mat-notes").value = it.notes || "";
+            matPhotoData = it.photo || null;
+            setPhoto("mat", matPhotoData);
+            gid("mat-qty").dispatchEvent(new Event("input"));
+          } else if (kind === "balance") {
+            const it = DATA.balances.find((x) => x.id === id);
+            if (!it) return;
+            openModal("balance");
+            editingRec = { kind: "balances", id };
+            setModalTitle("balance", "Editar dinero");
+            const other = !!it.origCurrency;
+            resetSeg("bal-currency-seg", other ? "OTHER" : it.currency === "USD" ? "USD" : "DOP");
+            gid("bal-amount").value = other ? it.origAmount : it.amount;
+            gid("bal-rate-field").style.display = !other && it.currency === "USD" ? "block" : "none";
+            gid("bal-rate").value = it.rate || "";
+            gid("bal-other-wrap").style.display = other ? "block" : "none";
+            if (other) { gid("bal-ocur").value = it.origCurrency; gid("bal-orate").value = it.origRate; }
+            gid("bal-source").value = it.source || "Otro";
+            gid("bal-method").value = it.method || "Efectivo";
+            gid("bal-date").value = it.date || todayInputVal();
+            gid("bal-notes").value = it.notes || "";
+            updateOtherPreview();
+          }
+        }
+        function injectEditButtons() {
+          [["data-del-payment", "payment"], ["data-del-material", "material"], ["data-del-balance", "balance"]].forEach(([attr, kind]) => {
+            document.querySelectorAll("[" + attr + "]").forEach((del) => {
+              const prev = del.previousElementSibling;
+              if (prev && prev.hasAttribute("data-edit-rec")) return;
+              const b = document.createElement("button");
+              b.setAttribute("data-edit-rec", kind);
+              b.setAttribute("data-id", del.getAttribute(attr));
+              b.type = "button";
+              if (del.classList.contains("icon-btn")) { b.className = "icon-btn"; b.title = "Editar"; b.innerHTML = ICONS.edit; }
+              else { b.className = "btn btn-ghost btn-sm"; b.style.flex = "1"; b.textContent = "Editar"; }
+              del.parentNode.insertBefore(b, del);
+            });
+          });
+        }
+
+        /* ============================================================
+   PAPELERA Y DESHACER
+   ============================================================ */
+        const KIND_LABEL = { materials: "Compra", payments: "Pago", balances: "Dinero", exchanges: "Cambio", pendings: "Pendiente" };
+        function toastUndo(msg, onUndo) {
+          const el = document.createElement("div");
+          el.className = "toast ok";
+          const sp = document.createElement("span");
+          sp.textContent = msg;
+          const b = document.createElement("button");
+          b.className = "undo-btn";
+          b.textContent = "Deshacer";
+          b.addEventListener("click", () => { onUndo(); el.remove(); });
+          el.appendChild(sp);
+          el.appendChild(b);
+          gid("toast-wrap").appendChild(el);
+          setTimeout(() => { el.style.transition = "opacity .25s"; el.style.opacity = "0"; setTimeout(() => el.remove(), 260); }, 6500);
+        }
+        function restoreFromTrash(id) {
+          const i = (DATA.trash || []).findIndex((t) => t.id === id);
+          if (i < 0) return;
+          const t = DATA.trash.splice(i, 1)[0];
+          if (!DATA[t.kind].some((x) => x.id === id)) {
+            DATA[t.kind].unshift(t.item);
+            if (t.kind === "payments") adjustPendingForPayment(t.item, 1);
+            syncUpsert(t.kind, t.item);
+          } else cacheLocally();
+          renderAll();
+          toast("Registro restaurado.", "ok");
+        }
+        function purgeTrash() {
+          const lim = Date.now() - 30 * 86400000;
+          DATA.trash = (DATA.trash || []).filter((t) => t.deletedAt > lim);
+        }
+        function trashTitle(t) {
+          const it = t.item || {};
+          return it.concept || it.name || it.source || it.beneficiary || "Registro " + t.id;
+        }
+        function renderTrash() {
+          const box = gid("trash-list");
+          if (!box) return;
+          const list = DATA.trash || [];
+          box.innerHTML = list.length ? list.map((t) => {
+            const it = t.item || {};
+            const amount = it.amount != null ? money(it.amount, it.currency) : it.total != null ? money(it.total, it.currency) : it.dopReceived != null ? money(it.dopReceived, "DOP") : "";
+            return '<div class="list-line"><div>' + escapeHtml(trashTitle(t)) + "<small>" + KIND_LABEL[t.kind] + " · " + amount + " · borrado " + new Date(t.deletedAt).toLocaleDateString("es-DO") + '</small></div><div class="mini-actions"><button class="btn btn-gold btn-sm" data-trash-restore="' + t.id + '">Restaurar</button><button class="icon-btn" title="Borrar para siempre" data-trash-purge="' + t.id + '">' + ICONS.trash + "</button></div></div>";
+          }).join("") : '<p class="card-sub" style="margin:0">La papelera está vacía.</p>';
+        }
+
+        /* ============================================================
+   RESPALDOS Y COPIAS AUTOMÁTICAS
+   ============================================================ */
+        const SNAP_KEY = "oc_snapshots_v1";
+        function countRecords() {
+          return DATA.materials.length + DATA.payments.length + DATA.exchanges.length + DATA.balances.length + (DATA.pendings || []).length;
+        }
+        function loadSnaps() { try { return JSON.parse(localStorage.getItem(SNAP_KEY) || "[]"); } catch (e) { return []; } }
+        function saveSnaps(arr) {
+          while (arr.length) { try { localStorage.setItem(SNAP_KEY, JSON.stringify(arr)); return; } catch (e) { arr.pop(); } }
+        }
+        function stripPhotos(d) {
+          const c = JSON.parse(JSON.stringify(d));
+          ["materials", "payments"].forEach((k) => (c[k] || []).forEach((x) => delete x.photo));
+          delete c.trash;
+          return c;
+        }
+        function takeSnapshot() {
+          try {
+            if (countRecords() === 0) return;
+            const day = todayInputVal();
+            const snaps = loadSnaps();
+            if (snaps.some((x) => x.day === day)) return;
+            snaps.unshift({ day, at: Date.now(), n: countRecords(), data: stripPhotos(DATA) });
+            saveSnaps(snaps.filter((x) => x.day !== "previo").slice(0, 7).concat(snaps.filter((x) => x.day === "previo")));
+          } catch (e) {}
+        }
+        function renderSnapshots() {
+          const box = gid("snap-list");
+          if (!box) return;
+          const snaps = loadSnaps();
+          box.innerHTML = snaps.length ? snaps.map((s, i) =>
+            '<div class="list-line"><div>' + (s.day === "previo" ? "Antes de la última restauración" : fmtDateInput(s.day)) + "<small>" + s.n + ' registros</small></div><button class="btn btn-ghost btn-sm" data-snap-restore="' + i + '">Restaurar</button></div>'
+          ).join("") : '<p class="card-sub" style="margin:0">Aún no hay copias. Se crean solas cuando abres la app.</p>';
+        }
+        function restoreSnapshot(i) {
+          const snaps = loadSnaps();
+          const snap = snaps[i];
+          if (!snap) return;
+          askConfirm("¿Restaurar esta copia?",
+            "Se reemplaza todo lo actual por la copia (" + snap.n + " registros). Las fotos que ya tienes se conservan. Antes se guarda una copia de lo actual por si te arrepientes.",
+            async () => {
+              const cur = DATA;
+              const keep = loadSnaps().filter((x) => x.day !== "previo");
+              keep.push({ day: "previo", at: Date.now(), n: countRecords(), data: stripPhotos(cur) });
+              saveSnaps(keep);
+              const d = defaultData();
+              DATA = Object.assign(d, snap.data, { config: Object.assign(d.config, snap.data.config || {}), counters: Object.assign(d.counters, snap.data.counters || {}), trash: cur.trash || [] });
+              ["materials", "payments"].forEach((k) => DATA[k].forEach((x) => { const o = (cur[k] || []).find((y) => y.id === x.id); if (o && o.photo) x.photo = o.photo; }));
+              cacheLocally();
+              renderAll();
+              if (sbClient && CONN) { try { await clearAllRemote(); await pushAllToSupabase(); } catch (e) { console.error(e); } }
+              toast("Copia restaurada.", "ok");
+            }, { label: "Sí, restaurar", cls: "btn-gold" });
+        }
+        function renderBackupBanner() {
+          const b = gid("backup-banner");
+          if (!b) return;
+          const last = Number(localStorage.getItem("oc_last_export") || 0);
+          const snooze = Number(localStorage.getItem("oc_backup_snooze") || 0);
+          const days = last ? Math.floor((Date.now() - last) / 86400000) : null;
+          const need = countRecords() >= 3 && (!last || days >= 7) && Date.now() > snooze;
+          b.classList.toggle("show", need);
+          if (need) gid("backup-banner-text").textContent = last ? "Hace " + days + " días que no descargas un respaldo de tus datos." : "Todavía no has descargado un respaldo de tus datos.";
+        }
+        gid("backup-now-btn").addEventListener("click", () => gid("export-btn").click());
+        gid("backup-later-btn").addEventListener("click", () => { localStorage.setItem("oc_backup_snooze", String(Date.now() + 3 * 86400000)); renderBackupBanner(); });
+
+        /* ============================================================
+   REPORTES (PDF y Excel/CSV)
+   ============================================================ */
+        gid("report-month").value = todayInputVal().slice(0, 7);
+        function allMovements() {
+          const rows = [];
+          DATA.materials.forEach((m) => rows.push({ date: m.date, type: "Compra", title: m.name, who: m.provider, apt: m.apartment, amount: m.total, currency: m.currency, eq: amountInDOP(Object.assign({}, m, { amount: m.total })), method: m.method, notes: m.notes, out: true }));
+          DATA.payments.forEach((p) => rows.push({ date: p.date, type: "Pago", title: p.concept, who: p.beneficiary, apt: p.apartment, amount: p.amount, currency: p.currency, eq: amountInDOP(p), method: p.method, notes: p.notes, out: true }));
+          DATA.balances.forEach((b) => rows.push({ date: b.date, type: "Ingreso", title: b.source, who: "", apt: "", amount: b.amount, currency: b.currency, eq: amountInDOP(b), method: b.method, notes: b.notes, out: false }));
+          DATA.exchanges.forEach((e) => rows.push({ date: e.date, type: "Cambio", title: "USD a DOP (tasa " + Number(e.rate).toFixed(2) + ")", who: e.source || "", apt: "", amount: e.dopReceived, currency: "DOP", eq: e.dopReceived, method: "", notes: "", out: null }));
+          return rows.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+        }
+        async function shareOrDownload(name, blob, mime, label) {
+          try {
+            const file = new File([blob], name, { type: mime });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: name }); return; }
+          } catch (e) { if (e && e.name === "AbortError") return; }
+          await downloadBlob(name, blob, label);
+        }
+        gid("report-csv-btn").addEventListener("click", async () => {
+          const cell = (v) => { v = String(v == null ? "" : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+          const lines = ["sep=,", ["Fecha", "Tipo", "Detalle", "Persona/Proveedor", "Apartamento", "Monto", "Moneda", "Equivale RD$", "Método", "Notas"].join(",")];
+          allMovements().forEach((r) => lines.push([r.date, r.type, r.title, r.who, r.apt, Number(r.amount).toFixed(2), r.currency, Number(r.eq).toFixed(2), r.method, r.notes].map(cell).join(",")));
+          await shareOrDownload("obra-control-movimientos-" + todayInputVal() + ".csv", new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" }), "text/csv", "Archivo descargado. Ábrelo con Excel.");
         });
+        gid("report-pdf-btn").addEventListener("click", async () => {
+          const ym = gid("report-month").value || todayInputVal().slice(0, 7);
+          if (!window.jspdf) { toast("No se pudo crear el PDF en este momento.", "warn"); return; }
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({ unit: "pt", format: "a4" });
+          const W = 595, M = 40;
+          const rows = allMovements().filter((r) => String(r.date).slice(0, 7) === ym);
+          const sum = (f) => rows.filter(f).reduce((t, r) => t + r.eq, 0);
+          const inc = sum((r) => r.out === false), mat = sum((r) => r.type === "Compra"), pay = sum((r) => r.type === "Pago");
+          const months = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+          const title = months[Number(ym.slice(5, 7)) - 1] + " " + ym.slice(0, 4);
+          let y = 56;
+          doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.text(DATA.config.projectName || "Obra Control", M, y);
+          doc.setFontSize(11); doc.setFont("helvetica", "normal"); doc.setTextColor(110);
+          y += 18; doc.text("Reporte de " + title + (DATA.config.ownerName ? " · " + DATA.config.ownerName : ""), M, y);
+          doc.setTextColor(0);
+          y += 28;
+          const kv = [["Entró este mes (aprox. en RD$)", money(inc, "DOP")], ["Gastó en materiales", money(mat, "DOP")], ["Gastó en pagos", money(pay, "DOP")], ["Resultado del mes", money(inc - mat - pay, "DOP")], ["Disponible hoy", money(cashDOP(), "DOP") + "  /  " + money(cashUSD(), "USD")], ["Por pagar (pendientes)", moneyMix(pendingTotals().all.dop, pendingTotals().all.usd)]];
+          doc.setFontSize(11);
+          kv.forEach(([k, v]) => { doc.setFont("helvetica", "normal"); doc.text(k, M, y); doc.setFont("helvetica", "bold"); doc.text(v, W - M, y, { align: "right" }); y += 18; });
+          y += 12;
+          const head = (t) => { doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text(t, M, y); y += 8; doc.setDrawColor(200); doc.line(M, y, W - M, y); y += 16; doc.setFontSize(9.5); };
+          const line = (cols) => {
+            if (y > 780) { doc.addPage(); y = 56; }
+            doc.setFont("helvetica", "normal");
+            doc.text(cols[0], M, y); doc.text(cols[1], M + 62, y);
+            doc.text(doc.splitTextToSize(cols[2], 250)[0], M + 118, y);
+            doc.text(cols[3], W - M, y, { align: "right" });
+            y += 15;
+          };
+          head("Movimientos del mes (" + rows.length + ")");
+          if (!rows.length) { doc.text("Sin movimientos en este mes.", M, y); y += 15; }
+          rows.slice().reverse().forEach((r) => line([fmtDateInput(r.date), r.type, r.title + (r.who ? " - " + r.who : ""), money(r.amount, r.currency)]));
+          y += 14;
+          if (y > 740) { doc.addPage(); y = 56; }
+          head("Pagos pendientes");
+          const open = openPendings().sort((a, b) => String(a.dueDate).localeCompare(String(b.dueDate)));
+          if (!open.length) { doc.text("Nada pendiente.", M, y); y += 15; }
+          open.forEach((p) => line([fmtDateInput(p.dueDate), pendState(p).label.slice(0, 14), p.concept + " - " + p.beneficiary, money(pendRemaining(p), p.currency)]));
+          const n = doc.getNumberOfPages();
+          for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFontSize(8); doc.setTextColor(140); doc.text("Obra Control · " + todayInputVal() + " · página " + i + " de " + n, W / 2, 820, { align: "center" }); }
+          await shareOrDownload("reporte-" + ym + ".pdf", doc.output("blob"), "application/pdf", "Reporte descargado.");
+        });
+
+        /* ============================================================
+   PERSONAS Y PROVEEDORES
+   ============================================================ */
+        let peopleKind = "people";
+        let personShareText = "";
+        wireSeg("people-kind-seg");
+        gid("people-kind-seg").addEventListener("segchange", (e) => { peopleKind = e.detail; renderPeople(); });
+        gid("search-people").addEventListener("input", renderPeople);
+        function buildPeople(kind) {
+          const map = {};
+          const get = (name) => {
+            const k = String(name || "").trim().toLowerCase();
+            if (!k || k === "sin especificar") return null;
+            return map[k] || (map[k] = { key: k, name: String(name).trim(), eq: 0, count: 0, last: "", pend: { dop: 0, usd: 0, count: 0 }, moves: [] });
+          };
+          if (kind === "people") {
+            DATA.payments.forEach((p) => { const r = get(p.beneficiary); if (!r) return; r.eq += amountInDOP(p); r.count++; if ((p.date || "") > r.last) r.last = p.date; r.moves.push({ date: p.date, label: "Pago · " + p.concept, amount: p.amount, currency: p.currency }); });
+            openPendings().forEach((p) => { const r = get(p.beneficiary); if (!r) return; if (p.currency === "USD") r.pend.usd += pendRemaining(p); else r.pend.dop += pendRemaining(p); r.pend.count++; r.pending = (r.pending || []).concat([p]); });
+          } else {
+            DATA.materials.forEach((m) => { const r = get(m.provider); if (!r) return; r.eq += amountInDOP(Object.assign({}, m, { amount: m.total })); r.count++; if ((m.date || "") > r.last) r.last = m.date; r.moves.push({ date: m.date, label: "Compra · " + m.name + " x" + m.quantity, amount: m.total, currency: m.currency }); });
+          }
+          return Object.values(map).sort((a, b) => b.eq - a.eq);
+        }
+        function renderPeople() {
+          const box = gid("cards-people");
+          if (!box) return;
+          const q = (gid("search-people").value || "").toLowerCase();
+          const list = buildPeople(peopleKind).filter((r) => r.name.toLowerCase().includes(q));
+          box.innerHTML = list.length ? list.map((r) =>
+            '<div class="mrow person-card" data-person="' + escapeHtml(r.key) + '"><div class="mrow-top"><div><div class="mrow-title">' + escapeHtml(r.name) + '</div><div class="mrow-sub">' + r.count + (peopleKind === "people" ? " pago" : " compra") + (r.count === 1 ? "" : "s") + (r.last ? " · último " + fmtDateInput(r.last) : "") +
+            '</div></div><div class="num" style="font-weight:600">' + money(r.eq, "DOP") + "</div></div>" +
+            (r.pend.count ? '<div class="mrow-meta"><span class="tag orange">Les debes ' + moneyMix(r.pend.dop, r.pend.usd) + "</span></div>" : "") + "</div>"
+          ).join("") : '<div class="empty-state">' + ICONS.empty + "<p>Todavía no hay " + (peopleKind === "people" ? "pagos a personas" : "compras con proveedor") + ".</p></div>";
+        }
+        function openPerson(key) {
+          const r = buildPeople(peopleKind).find((x) => x.key === key);
+          if (!r) return;
+          gid("person-title").textContent = r.name;
+          const moves = r.moves.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+          let html = '<div class="list-line"><div>Total ' + (peopleKind === "people" ? "pagado" : "comprado") + "<small>" + r.count + " movimientos (aprox. en RD$)</small></div><strong>" + money(r.eq, "DOP") + "</strong></div>";
+          let txt = r.name + "\nTotal " + (peopleKind === "people" ? "pagado" : "comprado") + ": " + money(r.eq, "DOP") + "\n";
+          if (r.pend.count) {
+            html += '<div class="list-line"><div>Pendiente por pagar<small>' + r.pend.count + " pagos</small></div><strong>" + moneyMix(r.pend.dop, r.pend.usd) + "</strong></div>";
+            txt += "Pendiente: " + moneyMix(r.pend.dop, r.pend.usd) + "\n";
+            (r.pending || []).forEach((p) => { html += '<div class="list-line"><div>' + escapeHtml(p.concept) + "<small>Vence " + fmtDateInput(p.dueDate) + "</small></div><span>" + money(pendRemaining(p), p.currency) + "</span></div>"; txt += "- " + p.concept + " (vence " + fmtDateInput(p.dueDate) + "): " + money(pendRemaining(p), p.currency) + "\n"; });
+          }
+          html += '<h3 style="margin:16px 0 4px;font-size:14px">Movimientos</h3>';
+          txt += "\nMovimientos:\n";
+          moves.slice(0, 60).forEach((m) => { html += '<div class="list-line"><div>' + escapeHtml(m.label) + "<small>" + fmtDateInput(m.date) + "</small></div><span>" + money(m.amount, m.currency) + "</span></div>"; txt += fmtDateInput(m.date) + " · " + m.label + ": " + money(m.amount, m.currency) + "\n"; });
+          gid("person-body").innerHTML = html;
+          personShareText = txt + "\n" + (DATA.config.projectName || "Obra Control");
+          openModal("person");
+        }
+        gid("person-share-btn").addEventListener("click", async () => {
+          try { if (navigator.share) { await navigator.share({ text: personShareText }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+          try { await navigator.clipboard.writeText(personShareText); toast("Estado de cuenta copiado.", "ok"); } catch (e) { window.prompt("Copia el estado de cuenta:", personShareText); }
+        });
+
+        /* ============================================================
+   TASA DE REFERENCIA (solo se copia al campo; tú decides)
+   ============================================================ */
+        gid("rate-ref-btn").addEventListener("click", async () => {
+          const msg = gid("rate-ref-msg");
+          try {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 8000);
+            const r = await fetch("https://open.er-api.com/v6/latest/USD", { signal: ctrl.signal });
+            clearTimeout(timer);
+            const v = (await r.json()).rates.DOP;
+            if (!v) throw new Error("sin tasa");
+            gid("rate-input").value = Number(v).toFixed(2);
+            msg.textContent = "Tasa de referencia de hoy: RD$ " + Number(v).toFixed(2) + " por US$. Ajusta si tu casa de cambio da otra y toca Guardar tasa.";
+          } catch (e) {
+            msg.textContent = navigator.onLine ? "No se pudo traer la tasa ahora. Escríbela tú." : "Sin internet: escribe la tasa tú.";
+          }
+        });
+
+        /* ---- clics globales ---- */
+        document.addEventListener("click", (e) => {
+          const t = (sel) => e.target.closest(sel);
+          let el;
+          if ((el = t("[data-pend-pay]"))) return openPendPay(el.dataset.pendPay);
+          if ((el = t("[data-pend-edit]"))) return editPending(el.dataset.pendEdit);
+          if ((el = t("[data-del-pending]"))) return deleteRecord("pendings", el.dataset.delPending);
+          if ((el = t("[data-edit-rec]"))) return editRecord(el.dataset.editRec, el.dataset.id);
+          if ((el = t("[data-goto]"))) return goToView(el.dataset.goto);
+          if ((el = t("[data-trash-restore]"))) return restoreFromTrash(el.dataset.trashRestore);
+          if ((el = t("[data-trash-purge]"))) { const id = el.dataset.trashPurge; DATA.trash = (DATA.trash || []).filter((x) => x.id !== id); cacheLocally(); return renderTrash(); }
+          if ((el = t("[data-snap-restore]"))) return restoreSnapshot(Number(el.dataset.snapRestore));
+          if ((el = t("[data-person]"))) return openPerson(el.dataset.person);
+        });
+
+
+        /* ============================================================
+   GRÁFICAS DEL DASHBOARD (SVG)
+   ============================================================ */
+        const MES_CORTO = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+        function lastMonths(n) {
+          const t = todayInputVal().split("-").map(Number);
+          let y = t[0], m = t[1];
+          const out = [];
+          for (let i = 0; i < n; i++) { out.unshift(y + "-" + String(m).padStart(2, "0")); m--; if (m < 1) { m = 12; y--; } }
+          return out;
+        }
+        function compactNum(n) {
+          const a = Math.abs(n);
+          if (a >= 1e6) return (n / 1e6).toFixed(a >= 1e7 ? 0 : 1).replace(/\.0$/, "") + "M";
+          if (a >= 1e3) return (n / 1e3).toFixed(a >= 1e4 ? 0 : 1).replace(/\.0$/, "") + "k";
+          return String(Math.round(n));
+        }
+        function niceMax(v) {
+          if (v <= 0) return 1;
+          const p = Math.pow(10, Math.floor(Math.log10(v)));
+          const f = v / p;
+          return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+        }
+        function monthLabel(ym) { return MES_CORTO[Number(ym.slice(5, 7)) - 1]; }
+        function spendByMonth() {
+          const out = {};
+          DATA.materials.forEach((m) => { const k = String(m.date || "").slice(0, 7); out[k] = (out[k] || 0) + amountInDOP(Object.assign({}, m, { amount: m.total })); });
+          DATA.payments.forEach((p) => { const k = String(p.date || "").slice(0, 7); out[k] = (out[k] || 0) + amountInDOP(p); });
+          return out;
+        }
+        function incomeByMonth() {
+          const out = {};
+          DATA.balances.forEach((b) => { const k = String(b.date || "").slice(0, 7); out[k] = (out[k] || 0) + amountInDOP(b); });
+          return out;
+        }
+        function smoothPath(pts) {
+          if (pts.length < 2) return "";
+          let d = "M" + pts[0][0].toFixed(1) + "," + pts[0][1].toFixed(1);
+          for (let i = 0; i < pts.length - 1; i++) {
+            const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+            const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+            const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+            d += " C" + c1x.toFixed(1) + "," + c1y.toFixed(1) + " " + c2x.toFixed(1) + "," + c2y.toFixed(1) + " " + p2[0].toFixed(1) + "," + p2[1].toFixed(1);
+          }
+          return d;
+        }
+        let flowData = [];
+        function chartFlow() {
+          const box = gid("chart-flow");
+          const months = lastMonths(6), inc = incomeByMonth(), sp = spendByMonth();
+          flowData = months.map((m) => ({ m, inc: inc[m] || 0, out: sp[m] || 0 }));
+          const mx = Math.max(...flowData.map((d) => Math.max(d.inc, d.out)));
+          if (mx <= 0) { box.innerHTML = '<div class="empty-state">' + ICONS.empty + "<p>Aún no hay movimientos para graficar.</p></div>"; gid("chart-flow-cap").textContent = ""; return; }
+          const top = niceMax(mx), W = 340, H = 190, L = 34, B = 24, T = 10, R = 6;
+          const ih = H - B - T, gw = (W - L - R) / 6;
+          const y = (v) => T + ih - (v / top) * ih;
+          let g = '<defs><linearGradient id="gIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--green)"/><stop offset="1" stop-color="var(--green)" stop-opacity=".35"/></linearGradient><linearGradient id="gOut" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--gold)" stop-opacity=".35"/></linearGradient></defs>';
+          for (let i = 0; i <= 4; i++) {
+            const v = (top / 4) * i, yy = y(v);
+            g += '<line class="gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + yy + '" y2="' + yy + '"/><text class="ax" x="' + (L - 6) + '" y="' + (yy + 3) + '" text-anchor="end">' + compactNum(v) + "</text>";
+          }
+          flowData.forEach((d, i) => {
+            const cx = L + gw * i + gw / 2, bw = Math.min(15, gw / 3);
+            const hi = Math.max(0, (d.inc / top) * ih), ho = Math.max(0, (d.out / top) * ih);
+            g += '<rect class="bar" data-i="' + i + '" style="--i:' + i + '" x="' + (cx - bw - 1.5) + '" y="' + (T + ih - hi) + '" width="' + bw + '" height="' + hi + '" rx="4" fill="url(#gIn)"/>';
+            g += '<rect class="bar" data-i="' + i + '" style="--i:' + i + '" x="' + (cx + 1.5) + '" y="' + (T + ih - ho) + '" width="' + bw + '" height="' + ho + '" rx="4" fill="url(#gOut)"/>';
+            g += '<text class="ax" x="' + cx + '" y="' + (H - 7) + '" text-anchor="middle">' + monthLabel(d.m) + "</text>";
+          });
+          box.innerHTML = '<svg class="chart-svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Flujo mensual">' + g + "</svg>" +
+            '<div style="display:flex;gap:16px;font-size:11.5px;color:var(--text-dim);margin-top:6px"><span><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px"></i>Entró</span><span><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:6px"></i>Salió</span></div>';
+          const cur = flowData[flowData.length - 1];
+          gid("chart-flow-cap").innerHTML = "<b>" + monthLabel(cur.m) + "</b> · Entró " + money(cur.inc, "DOP") + " · Salió " + money(cur.out, "DOP");
+        }
+        gid("chart-flow").addEventListener("click", (e) => {
+          const b = e.target.closest("[data-i]");
+          if (!b) return;
+          const d = flowData[Number(b.dataset.i)];
+          gid("chart-flow-cap").innerHTML = "<b>" + monthLabel(d.m) + " " + d.m.slice(0, 4) + "</b> · Entró " + money(d.inc, "DOP") + " · Salió " + money(d.out, "DOP");
+        });
+
+        function chartCumulative() {
+          const box = gid("chart-cum"), cap = gid("chart-cum-cap");
+          const sp = spendByMonth();
+          const keys = Object.keys(sp).filter((k) => k.length === 7 && k <= todayInputVal().slice(0, 7)).sort();
+          if (!keys.length) { box.innerHTML = '<div class="empty-state">' + ICONS.empty + "<p>Aún no hay gastos para graficar.</p></div>"; cap.textContent = ""; return; }
+          const all = lastMonths(12);
+          let first = all.indexOf(keys[0]); if (first < 0) first = 0;
+          const months = all.slice(Math.max(0, first - 1));
+          let run = 0;
+          const vals = months.map((m) => (run += sp[m] || 0));
+          const budget = Number(DATA.config.budgetTotal) || 0;
+          const top = niceMax(Math.max(vals[vals.length - 1], budget || 0) * 1.05);
+          const W = 340, H = 190, L = 34, B = 24, T = 10, R = 10, ih = H - B - T, iw = W - L - R;
+          const px = (i) => L + (months.length === 1 ? iw / 2 : (iw * i) / (months.length - 1));
+          const py = (v) => T + ih - (v / top) * ih;
+          const pts = vals.map((v, i) => [px(i), py(v)]);
+          const line = smoothPath(pts);
+          const area = line + " L" + px(months.length - 1) + "," + (T + ih) + " L" + px(0) + "," + (T + ih) + " Z";
+          let g = '<defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--blue)" stop-opacity=".45"/><stop offset="1" stop-color="var(--blue)" stop-opacity="0"/></linearGradient></defs>';
+          for (let i = 0; i <= 4; i++) { const v = (top / 4) * i, yy = py(v); g += '<line class="gl" x1="' + L + '" x2="' + (W - R) + '" y1="' + yy + '" y2="' + yy + '"/><text class="ax" x="' + (L - 6) + '" y="' + (yy + 3) + '" text-anchor="end">' + compactNum(v) + "</text>"; }
+          if (budget > 0) g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + py(budget) + '" y2="' + py(budget) + '" stroke="var(--orange)" stroke-width="1.3" stroke-dasharray="5 4"/><text class="ax" x="' + (W - R) + '" y="' + (py(budget) - 5) + '" text-anchor="end" style="fill:var(--orange)">Presupuesto</text>';
+          g += '<path class="area-path" d="' + area + '" fill="url(#gArea)"/><path class="line-path" pathLength="1" d="' + line + '" fill="none" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round"/>';
+          const last = pts[pts.length - 1];
+          g += '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="4.5" fill="var(--blue)"/><circle cx="' + last[0] + '" cy="' + last[1] + '" r="8" fill="var(--blue)" opacity=".2"/>';
+          const idx = months.length > 4 ? [0, Math.floor((months.length - 1) / 2), months.length - 1] : months.map((_, i) => i);
+          idx.forEach((i) => (g += '<text class="ax" x="' + px(i) + '" y="' + (H - 7) + '" text-anchor="' + (i === 0 ? "start" : i === months.length - 1 ? "end" : "middle") + '">' + monthLabel(months[i]) + "</text>"));
+          box.innerHTML = '<svg class="chart-svg" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Gasto acumulado">' + g + "</svg>";
+          const total = vals[vals.length - 1];
+          cap.innerHTML = "Gastado <b>" + money(total, "DOP") + "</b>" + (budget > 0 ? " de " + money(budget, "DOP") + " · <b style=\"color:" + (total > budget ? "var(--red)" : "var(--green)") + "\">" + Math.round((total / budget) * 100) + "%</b>" : "");
+        }
+
+        function chartDonut() {
+          const box = gid("dash-breakdown");
+          const cats = [
+            { label: "Materiales", val: totalMaterialsDOP(), color: "var(--blue)" },
+          ];
+          const byType = {};
+          DATA.payments.forEach((p) => { const t = p.beneficiaryType || "Otro"; byType[t] = (byType[t] || 0) + amountInDOP(p); });
+          const tcol = { Ferretería: "var(--gold)", Maestro: "var(--green)", Trabajador: "var(--orange)", Otro: "#a78bfa" };
+          Object.keys(byType).forEach((t) => cats.push({ label: t, val: byType[t], color: tcol[t] || "#a78bfa" }));
+          const list = cats.filter((c) => c.val > 0.004);
+          const total = list.reduce((t, c) => t + c.val, 0);
+          if (!total) { box.innerHTML = '<div class="empty-state">' + ICONS.empty + "<p>Aún no hay gastos.</p></div>"; return; }
+          const r = 54, C = 2 * Math.PI * r;
+          let off = 0, segs = "";
+          list.forEach((c) => { const len = (c.val / total) * C; segs += '<circle cx="70" cy="70" r="' + r + '" fill="none" stroke="' + c.color + '" stroke-width="16" stroke-dasharray="' + Math.max(0, len - 2).toFixed(2) + " " + (C - Math.max(0, len - 2)).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '" transform="rotate(-90 70 70)" stroke-linecap="butt"/>'; off += len; });
+          box.innerHTML = '<div class="donut-wrap"><svg viewBox="0 0 140 140" role="img" aria-label="Gastos por categoría"><circle cx="70" cy="70" r="' + r + '" fill="none" stroke="var(--surface-2)" stroke-width="16"/>' + segs +
+            '<text x="70" y="68" text-anchor="middle" style="fill:var(--text);font-size:17px;font-weight:600">' + compactNum(total) + '</text><text x="70" y="84" text-anchor="middle" class="ax">RD$ gastado</text></svg><div class="legend">' +
+            list.map((c) => '<div class="legend-row"><i style="background:' + c.color + '"></i><span class="lg-name">' + escapeHtml(c.label) + '</span><span class="lg-pct">' + Math.round((c.val / total) * 100) + '%</span><span class="num" style="font-size:12.5px">' + compactNum(c.val) + "</span></div>").join("") + "</div></div>";
+        }
+
+        function chartApartments() {
+          const box = gid("dash-by-apartment");
+          const apts = DATA.config.apartments || ["Apartamento 1", "Apartamento 2"];
+          const bud = DATA.config.aptBudgets || {};
+          const tot = {};
+          apts.concat(["General"]).forEach((a) => (tot[a] = 0));
+          DATA.materials.forEach((m) => { const a = m.apartment || "General"; tot[a] = (tot[a] || 0) + amountInDOP(Object.assign({}, m, { amount: m.total })); });
+          DATA.payments.forEach((p) => { const a = p.apartment || "General"; tot[a] = (tot[a] || 0) + amountInDOP(p); });
+          const rows = Object.keys(tot).filter((a) => tot[a] > 0 || bud[a] > 0);
+          if (!rows.length) { box.innerHTML = '<div class="empty-state">' + ICONS.empty + "<p>Aún no hay gastos asignados a un apartamento.</p></div>"; return; }
+          const mx = Math.max(1, ...rows.map((a) => tot[a]));
+          const pal = ["var(--blue)", "var(--green)", "var(--orange)", "var(--gold)"];
+          box.innerHTML = rows.map((a, i) => {
+            const b = Number(bud[a]) || 0, v = tot[a];
+            const pct = b > 0 ? (v / b) * 100 : (v / mx) * 100;
+            const over = b > 0 && v > b;
+            const col = over ? "var(--red)" : pal[i % pal.length];
+            return '<div class="apt-row"><div class="apt-top"><span>' + escapeHtml(a) + '</span><span class="num">' + money(v, "DOP") + '</span></div><div class="apt-track"><div class="apt-fill" style="width:' + Math.min(100, pct).toFixed(1) + "%;background:" + col + '"></div></div>' +
+              (b > 0 ? '<div class="apt-sub">' + (over ? "Se pasó por " + money(v - b, "DOP") : "Queda " + money(b - v, "DOP")) + " · " + Math.round(pct) + "% de " + money(b, "DOP") + "</div>" : "") + "</div>";
+          }).join("");
+        }
+
+        function renderCharts() {
+          if (!gid("chart-flow")) return;
+          try { chartFlow(); chartCumulative(); chartDonut(); chartApartments(); } catch (e) { console.error(e); }
+        }
+
+
+        /* ============================================================
+   CANDADO CON PIN (solo protege este aparato)
+   ============================================================ */
+        const PIN_KEY = "oc_pin";
+        let lockMode = "unlock", lockBuf = "", lockFirst = "", lockOnOk = null, lockFails = 0, lockUntil = 0, hiddenAt = 0;
+        function pinStored() { try { return JSON.parse(localStorage.getItem(PIN_KEY) || "null"); } catch (e) { return null; } }
+        async function hashPin(pin, salt) {
+          const data = salt + ":" + pin;
+          try {
+            if (window.crypto && crypto.subtle) {
+              const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(data));
+              return Array.from(new Uint8Array(b)).map((x) => x.toString(16).padStart(2, "0")).join("");
+            }
+          } catch (e) {}
+          let h = 5381;
+          for (let i = 0; i < data.length; i++) h = ((h << 5) + h + data.charCodeAt(i)) >>> 0;
+          return "f" + h.toString(16);
+        }
+        const LOCK_TITLES = { unlock: "Ingresa tu PIN", verify: "Confirma tu PIN actual", set1: "Crea tu PIN de 4 dígitos", set2: "Repite el PIN" };
+        function lockMsg(t) { gid("lock-msg").textContent = t || ""; }
+        function lockDots() { gid("lock-dots").querySelectorAll("i").forEach((d, i) => d.classList.toggle("on", i < lockBuf.length)); }
+        function lockShow(mode, onOk) {
+          lockMode = mode; lockBuf = ""; lockFirst = ""; lockOnOk = onOk || null;
+          gid("lock-title").textContent = LOCK_TITLES[mode];
+          gid("lock-cancel").style.display = mode === "unlock" ? "none" : "inline-block";
+          gid("lock-forgot").style.display = mode === "unlock" || mode === "verify" ? "inline-block" : "none";
+          lockMsg(""); lockDots();
+          document.documentElement.classList.add("locked");
+        }
+        function lockHide() { document.documentElement.classList.remove("locked"); }
+        async function lockSubmit() {
+          const pin = lockBuf;
+          lockBuf = ""; lockDots();
+          if (lockMode === "unlock" || lockMode === "verify") {
+            if (Date.now() < lockUntil) { lockMsg("Espera unos segundos para volver a intentar."); return; }
+            const st = pinStored();
+            if (!st) { lockHide(); return; }
+            if ((await hashPin(pin, st.salt)) === st.hash) {
+              lockFails = 0; lockMsg("");
+              const cb = lockOnOk; lockOnOk = null;
+              lockHide();
+              if (cb) cb();
+            } else {
+              lockFails++;
+              const dots = gid("lock-dots");
+              dots.classList.remove("shake"); void dots.offsetWidth; dots.classList.add("shake");
+              if (lockFails >= 5) { lockUntil = Date.now() + 30000; lockFails = 0; lockMsg("Demasiados intentos. Espera 30 segundos."); }
+              else lockMsg("PIN incorrecto");
+            }
+          } else if (lockMode === "set1") {
+            lockFirst = pin; lockMode = "set2"; gid("lock-title").textContent = LOCK_TITLES.set2; lockMsg("");
+          } else if (lockMode === "set2") {
+            if (pin !== lockFirst) { lockMode = "set1"; gid("lock-title").textContent = LOCK_TITLES.set1; lockMsg("No coinciden. Intenta de nuevo."); return; }
+            const salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
+            localStorage.setItem(PIN_KEY, JSON.stringify({ salt: salt, hash: await hashPin(pin, salt) }));
+            lockHide(); renderPinCard(); toast("PIN activado en este aparato.", "ok");
+          }
+        }
+        function lockKey(k) {
+          if (k === "del") lockBuf = lockBuf.slice(0, -1);
+          else if (lockBuf.length < 4) lockBuf += k;
+          lockDots();
+          if (lockBuf.length === 4) setTimeout(lockSubmit, 120);
+        }
+        gid("lock-pad").addEventListener("click", (e) => { const b = e.target.closest("[data-k]"); if (b) lockKey(b.dataset.k); });
+        document.addEventListener("keydown", (e) => {
+          if (!document.documentElement.classList.contains("locked")) return;
+          if (/^[0-9]$/.test(e.key)) lockKey(e.key);
+          else if (e.key === "Backspace") lockKey("del");
+        });
+        gid("lock-cancel").addEventListener("click", lockHide);
+        gid("lock-forgot").addEventListener("click", () => {
+          if (!window.confirm("¿Olvidaste el PIN?\n\nPara entrar de nuevo se borrarán los datos y la conexión de ESTE aparato (también el PIN). Si tenías la nube conectada, tus datos siguen ahí: solo vuelve a conectar con el enlace.\n\n¿Borrar los datos de este aparato?")) return;
+          ["obra_control_v1", "obra_control_conn", "oc_outbox_v1", "oc_snapshots_v1", "oc_last_export", "oc_backup_snooze", PIN_KEY].forEach((k) => { try { localStorage.removeItem(k); } catch (e) {} });
+          location.reload();
+        });
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) hiddenAt = Date.now();
+          else if (pinStored() && hiddenAt && Date.now() - hiddenAt > 60000) lockShow("unlock");
+        });
+        function renderPinCard() {
+          const box = gid("pin-actions");
+          if (!box) return;
+          const on = !!pinStored();
+          gid("pin-sub").textContent = on ? "Activado: se pide el PIN al abrir y al volver a la app después de 1 minuto. Solo protege este aparato, no la nube." : "Protege la app en este aparato con un PIN de 4 dígitos";
+          box.innerHTML = on ? '<button class="btn btn-ghost" id="pin-change" type="button">Cambiar PIN</button><button class="btn btn-danger" id="pin-remove" type="button">Quitar PIN</button>' : '<button class="btn btn-gold" id="pin-create" type="button">Crear PIN</button>';
+        }
+        gid("pin-actions").addEventListener("click", (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          if (b.id === "pin-create") lockShow("set1");
+          else if (b.id === "pin-change") lockShow("verify", () => lockShow("set1"));
+          else if (b.id === "pin-remove") lockShow("verify", () => { localStorage.removeItem(PIN_KEY); renderPinCard(); toast("PIN quitado.", "ok"); });
+        });
+        if (pinStored()) lockShow("unlock");
 
         function populateApartmentSelects() {
           const anyModalOpen = document.querySelector(".modal-overlay.open");
@@ -6598,8 +7275,15 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           renderMateriales();
           renderPagos();
           renderBalances();
+          renderCharts();
           renderPendientes();
+          renderPeople();
           renderConfig();
+          renderTrash();
+          renderPinCard();
+          renderSnapshots();
+          renderBackupBanner();
+          injectEditButtons();
         }
 
         /* ============================================================
@@ -6692,7 +7376,11 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
           } catch (e) {
             console.error(e);
           }
-          boot().then(renderAll);
+          boot().then(() => {
+            purgeTrash();
+            takeSnapshot();
+            renderAll();
+          });
         }
         init();
       })();
